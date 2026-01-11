@@ -81,6 +81,23 @@ export default function AccountPage() {
     }
   }
 
+  async function mockDowngradeToFree() {
+    if (state.status !== "ready") return;
+    setUpdating(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ subscription_plan: "free" })
+        .eq("email", state.email ?? "");
+
+      if (!error) {
+        setState({ ...state, plan: "free" });
+      }
+    } finally {
+      setUpdating(false);
+    }
+  }
+
   if (state.status === "loading") {
     return (
       <main className="flex min-h-screen items-center justify-center bg-primary text-white">
@@ -196,7 +213,16 @@ export default function AccountPage() {
 
         <div className="flex items-center justify-between pt-2 text-xs text-slate-400">
           <span>Phase 2 · Mock subscription only</span>
-          {!isPro && (
+          {isPro ? (
+            <button
+              type="button"
+              onClick={mockDowngradeToFree}
+              disabled={updating}
+              className="rounded-md bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-100 hover:bg-slate-700 disabled:opacity-60 border border-slate-600"
+            >
+              {updating ? "Updating..." : "Mock downgrade to Free"}
+            </button>
+          ) : (
             <button
               type="button"
               onClick={mockUpgradeToPro}

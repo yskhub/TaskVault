@@ -187,6 +187,7 @@ export default function TeamPage() {
 
   const isPro = state.plan === "pro";
   const limit = isPro ? 10 : 2;
+  const remaining = state.status === "ready" ? limit - state.members.length : limit;
 
   return (
     <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8">
@@ -218,6 +219,22 @@ export default function TeamPage() {
               {isPro ? "Pro" : "Free"} plan · {limit} member limit
             </span>
           </div>
+
+          {state.status === "ready" && (
+            <div className="mt-2 text-xs">
+              {remaining <= 0 ? (
+                <p className="rounded-md border border-red-500/60 bg-red-600/10 px-3 py-2 text-red-100">
+                  You are at the {state.plan} plan limit of {limit} team members. Remove a member or
+                  upgrade your plan to add more.
+                </p>
+              ) : remaining === 1 ? (
+                <p className="rounded-md border border-amber-500/60 bg-amber-500/10 px-3 py-2 text-amber-100">
+                  You are near the {state.plan} plan limit. You can add <strong>1</strong> more
+                  member before hitting the cap of {limit}.
+                </p>
+              ) : null}
+            </div>
+          )}
 
           <form onSubmit={handleAdd} className="space-y-4 mt-4">
             <div className="grid gap-3 sm:grid-cols-[2fr,1fr] text-sm">

@@ -42,24 +42,25 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch(`${API_BASE_URL}/analytics/overview`);
-        if (!res.ok) {
-          throw new Error("Failed to load analytics");
-        }
-        const json = (await res.json()) as AnalyticsOverview;
-        setData(json);
-      } catch (err) {
-        console.error(err);
-        setError("Unable to load analytics data. Try again later.");
-      } finally {
-        setLoading(false);
+  async function loadAnalytics() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/analytics/overview`);
+      if (!res.ok) {
+        throw new Error("Failed to load analytics");
       }
+      const json = (await res.json()) as AnalyticsOverview;
+      setData(json);
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError("Unable to load analytics data. Try again later.");
+    } finally {
+      setLoading(false);
     }
+  }
 
-    load();
+  useEffect(() => {
+    loadAnalytics();
   }, []);
 
   if (loading) {
@@ -84,6 +85,11 @@ export default function DashboardPage() {
 
   const workflow = data.workflows;
   const team = data.team;
+
+  const completionRate =
+    workflow.total_steps === 0
+      ? 0
+      : Math.round((workflow.completed_steps / workflow.total_steps) * 100);
 
   const stepsChartData = {
     labels: ["Pending", "In progress", "Completed"],
@@ -161,6 +167,25 @@ export default function DashboardPage() {
             <p className="mt-1 text-xs text-slate-400">
               {team.admins} admins · {team.members} members
             </p>
+          </div>
+          <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 shadow flex flex-col justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-slate-400">Completion rate</p>
+              <p className="mt-2 text-3xl font-semibold">{completionRate}%</p>
+              <p className="mt-1 text-xs text-slate-400">
+                Percentage of workflow steps that are marked as completed.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setLoading(true);
+                loadAnalytics();
+              }}
+              className="mt-3 inline-flex items-center justify-center rounded-md border border-slate-700 bg-slate-900 px-3 py-1.5 text-[11px] font-semibold text-slate-100 hover:bg-slate-800"
+            >
+              Refresh analytics
+            </button>
           </div>
         </section>
 

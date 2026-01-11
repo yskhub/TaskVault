@@ -10,6 +10,7 @@ This repo is organized and versioned by implementation phases that match the pro
 - **Phase 3** – In-memory workflow management APIs and `/workflows` UI.
 - **Phase 4** – User & team management, Supabase-backed `team_members` table, `/team` UI.
 - **Phase 5** – Dashboard & analytics via `/analytics/overview` and `/dashboard` (charts).
+ - **Phase 6** – Optional features: mock plan upgrades/downgrades, usage limit alerts, and enhanced analytics.
 
 Each phase has:
 - A design/spec document under `Development_Phases/`.
@@ -25,11 +26,12 @@ The `main` branch contains a linear set of phase commits plus the initial GitHub
 - Tag **phase-3** → Commit "Phase 3: in-memory workflow management backend+frontend"
 - Tag **phase-4** → Commit "Phase 4: user & team management (in-memory)"
 - Tag **phase-4-supabase** → Commit "Phase 4: Supabase team persistence"
+ - Tag **phase-5** → Commit "Phase 5: dashboard analytics backend+frontend"
 
 You can check out any phase with:
 
 ```bash
-git checkout phase-1   # or phase-2, phase-3, phase-4, phase-4-supabase
+git checkout phase-1   # or phase-2, phase-3, phase-4, phase-4-supabase, phase-5
 ```
 
 The actual Git commands used to create these commits and tags are documented in git-operations/phase-commits.md.

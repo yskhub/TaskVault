@@ -161,4 +161,34 @@ git tag phase-5
 git push origin phase-5
 ```
 
+---
+
+## Phase 6 – Optional Features & Mock Plan Upgrades
+
+After Phase 6 changes (mock plan downgrade, usage limit alerts, enhanced dashboard metrics) are complete and Phase 5 has already been committed:
+
+```bash
+# Ensure you are up to date
+cd D:/onlyai/Assignment_2/TaskVault
+git pull
+
+# Stage files changed in Phase 6
+git add taskvault-frontend/app/account/page.tsx \
+	taskvault-frontend/app/team/page.tsx \
+	taskvault-frontend/app/dashboard/page.tsx \
+	docs/phase-6-optional-features.md \
+	walkthrough/phase-6-walkthrough.md \
+	README.md
+
+# Commit with a Phase 6 message
+git commit -m "Phase 6: optional features and mock plan upgrades"
+
+# Push to remote
+git push origin main
+
+# (Optional) tag for Phase 6
+git tag phase-6
+git push origin phase-6
+```
+
 Adjust paths or messages as needed based on your exact changes.
