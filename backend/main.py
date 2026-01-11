@@ -17,10 +17,17 @@ from .supabase_client import check_supabase_connection
 
 app = FastAPI()
 
-# Allow frontend (Next.js dev) to call this API from the browser
+# Allow frontend (Next.js dev / deployed) to call this API from the browser.
+# In production, set FRONTEND_ORIGINS in the environment (comma-separated list).
+frontend_origins_env = os.getenv("FRONTEND_ORIGINS")
+if frontend_origins_env:
+    allowed_origins = [origin.strip() for origin in frontend_origins_env.split(",") if origin.strip()]
+else:
+    allowed_origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
