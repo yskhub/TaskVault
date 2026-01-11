@@ -2,14 +2,14 @@
 
 ## Overview
 
-Phase 4 introduces basic, in-memory user & team management on top of the existing TaskVault foundation.
+Phase 4 introduces basic user & team management backed by Supabase (free tier Postgres) on top of the existing TaskVault foundation.
 
 The goal is to:
 - Maintain a simple team roster (email + role) for the current workspace.
 - Enforce subscription-based limits (Free vs Pro plans).
 - Demonstrate elementary role-based access control around team operations.
 
-This phase is intentionally implemented **in-memory** for clarity and speed; later phases could move this into Supabase tables.
+This phase uses a lightweight Supabase table for persistence but keeps the logic simple so it remains easy to follow and stays within Supabase's free tier.
 
 ---
 
@@ -34,14 +34,25 @@ Implemented in `backend/main.py` under the "Phase 4: User & team management" sec
 - `TeamRoleUpdate` – payload for changing a member's role.
   - `role: Literal["admin", "member"]`
 
-### In-memory Storage
+### Supabase Storage (Free Tier)
 
-The API keeps everything in memory:
+The API now stores team members in a Supabase Postgres table called `team_members` via the free PostgREST API:
 
-- `team_members: List[TeamMemberOut] = []`
-- `next_member_id: int = 1`
+```sql
+create table if not exists team_members (
+  id bigserial primary key,
+  email text not null unique,
+  role text not null check (role in ('admin', 'member')),
+  created_at timestamptz default now()
+);
+```
 
-This keeps the example focused on the HTTP and validation logic rather than persistence.
+The FastAPI app talks to this table using environment variables already used in earlier phases:
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+No paid Supabase features are required for this; everything works on the standard free tier.
 
 ### Endpoints
 
@@ -49,10 +60,10 @@ All endpoints are rooted at the existing FastAPI app.
 
 #### `GET /team`
 
-List all team members.
+List all team members stored in the `team_members` table.
 
 - **Response:** `List[TeamMemberOut]`
-- No authentication is enforced at the backend layer for this prototype.
+- No authentication is enforced at the backend layer for this prototype; the frontend still controls access via Supabase Auth and plan checks.
 
 #### `POST /team/add`
 
@@ -129,7 +140,10 @@ This mirrors the behavior of the `/account` page, keeping plan logic in one plac
 ### Subscription & Role Enforcement
 
 - **Subscription limits** are enforced on the backend and surfaced in the UI via error messages.
-- **Role-based access** is simulated by always calling admin-only endpoints with `actor_role=admin` for this prototype. In a production system, this would be derived from the authenticated user and enforced server-side.
+- **Role-based access** is partially enforced by plan:
+  - Only **Pro** plan accounts see admin controls on the `/team` page.
+  - The frontend calls admin-only endpoints with `actor_role=admin` for Pro accounts, and blocks these actions for Free accounts with a clear message.
+  - In a production system, `actor_role` would be derived from the authenticated user (e.g., JWT claims) and enforced fully server-side.
 
 ---
 

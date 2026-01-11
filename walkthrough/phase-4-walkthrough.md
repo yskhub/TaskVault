@@ -14,7 +14,7 @@ The goal of Phase 4 was to layer **basic team management** on top of this founda
 
 ---
 
-## 2. Backend: In-memory Team API
+## 2. Backend: Supabase-backed Team API
 
 ### 2.1. Adding Models
 
@@ -25,38 +25,35 @@ In `backend/main.py`, after the Phase 3 workflow management section, new Pydanti
 - `TeamAddRequest` – request body for creating a member, including the current plan (`free` or `pro`).
 - `TeamRoleUpdate` – request body for updating a member's role.
 
-An in-memory store was added:
-
-- `team_members: List[TeamMemberOut] = []`
-- `next_member_id: int = 1`
+Instead of an in-memory list, the backend now talks to a Supabase table called `team_members` using the PostgREST API and the existing environment variables `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
 
 ### 2.2. Implementing Endpoints
 
-The following endpoints were implemented on the same FastAPI app:
+The following endpoints were implemented on the same FastAPI app and now proxy through to Supabase:
 
 1. `GET /team`
-   - Returns the full `team_members` list.
+  - Issues a `GET` request to `rest/v1/team_members?select=id,email,role`.
+  - Maps the returned rows into `TeamMemberOut` objects for the frontend.
 
 2. `POST /team/add`
    - Accepts `TeamAddRequest`.
+   - Calls `GET /team` first to enforce limits and detect duplicates.
    - Rejects duplicate emails (case-insensitive) with `400`.
    - Enforces subscription limits:
      - Free: max 2 members.
      - Pro: max 10 members.
-   - Returns `403` with a clear message if the plan limit is exceeded.
-   - On success, creates a `TeamMemberOut` with a new `id` and appends it to `team_members`.
+   - On success, performs a `POST` to `rest/v1/team_members` with `Prefer: return=representation` so the inserted row is returned and mapped back to `TeamMemberOut`.
 
 3. `PATCH /team/{member_id}/role`
-   - Accepts `TeamRoleUpdate` and `actor_role` query param.
-   - If `actor_role != "admin"`, returns `403`.
-   - If `member_id` is not found, returns `404`.
-   - Otherwise, updates the member's role.
+  - Accepts `TeamRoleUpdate` and `actor_role` query param.
+  - If `actor_role != "admin"`, returns `403`.
+  - Performs a `PATCH` against `rest/v1/team_members?id=eq.{member_id}&select=id,email,role`.
+  - If no row is returned, responds with `404`.
 
 4. `DELETE /team/{member_id}`
-   - Accepts `actor_role` query param.
-   - If `actor_role != "admin"`, returns `403`.
-   - If `member_id` is not found, returns `404`.
-   - Otherwise, removes the member from `team_members`.
+  - Accepts `actor_role` query param.
+  - If `actor_role != "admin"`, returns `403`.
+  - Performs a `DELETE` against `rest/v1/team_members?id=eq.{member_id}` and treats `204`/`200` as success.
 
 These endpoints provide a minimal but complete example of CRUD + role-based access and subscription-aware limits.
 

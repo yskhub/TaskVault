@@ -111,12 +111,21 @@ export default function TeamPage() {
   async function updateRole(memberId: number, newRole: "admin" | "member") {
     if (state.status !== "ready") return;
 
+    const isPro = state.plan === "pro";
+    if (!isPro) {
+      setError("Only Pro plan accounts can change roles.");
+      return;
+    }
+
     try {
-      const res = await fetch(`${API_BASE_URL}/team/${memberId}/role?actor_role=admin`, {
+      const res = await fetch(
+        `${API_BASE_URL}/team/${memberId}/role?actor_role=admin`,
+        {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role: newRole }),
-      });
+        },
+      );
 
       if (!res.ok) return;
       await fetchTeam();
@@ -128,10 +137,19 @@ export default function TeamPage() {
   async function removeMember(memberId: number) {
     if (state.status !== "ready") return;
 
+    const isPro = state.plan === "pro";
+    if (!isPro) {
+      setError("Only Pro plan accounts can remove members.");
+      return;
+    }
+
     try {
-      const res = await fetch(`${API_BASE_URL}/team/${memberId}?actor_role=admin`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `${API_BASE_URL}/team/${memberId}?actor_role=admin`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (!res.ok) return;
       await fetchTeam();
@@ -269,31 +287,39 @@ export default function TeamPage() {
                       </td>
                       <td className="px-4 py-2">
                         <div className="flex justify-end gap-2 text-xs">
-                          {member.role !== "admin" && (
-                            <button
-                              type="button"
-                              onClick={() => updateRole(member.id, "admin")}
-                              className="rounded-md border border-purple-500/60 bg-purple-600/20 px-3 py-1 font-semibold text-purple-100 hover:bg-purple-600/30"
-                            >
-                              Make admin
-                            </button>
+                          {isPro ? (
+                            <>
+                              {member.role !== "admin" && (
+                                <button
+                                  type="button"
+                                  onClick={() => updateRole(member.id, "admin")}
+                                  className="rounded-md border border-purple-500/60 bg-purple-600/20 px-3 py-1 font-semibold text-purple-100 hover:bg-purple-600/30"
+                                >
+                                  Make admin
+                                </button>
+                              )}
+                              {member.role !== "member" && (
+                                <button
+                                  type="button"
+                                  onClick={() => updateRole(member.id, "member")}
+                                  className="rounded-md border border-slate-600 bg-slate-800 px-3 py-1 font-semibold text-slate-100 hover:bg-slate-700"
+                                >
+                                  Make member
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => removeMember(member.id)}
+                                className="rounded-md border border-red-500/60 bg-red-600/20 px-3 py-1 font-semibold text-red-100 hover:bg-red-600/30"
+                              >
+                                Remove
+                              </button>
+                            </>
+                          ) : (
+                            <span className="text-[11px] text-slate-500">
+                              Upgrade to Pro to manage roles
+                            </span>
                           )}
-                          {member.role !== "member" && (
-                            <button
-                              type="button"
-                              onClick={() => updateRole(member.id, "member")}
-                              className="rounded-md border border-slate-600 bg-slate-800 px-3 py-1 font-semibold text-slate-100 hover:bg-slate-700"
-                            >
-                              Make member
-                            </button>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => removeMember(member.id)}
-                            className="rounded-md border border-red-500/60 bg-red-600/20 px-3 py-1 font-semibold text-red-100 hover:bg-red-600/30"
-                          >
-                            Remove
-                          </button>
                         </div>
                       </td>
                     </tr>

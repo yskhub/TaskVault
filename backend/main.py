@@ -1,3 +1,7 @@
+import json
+import os
+from urllib import error as urlerror, request as urlrequest
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -126,39 +130,116 @@ class TeamRoleUpdate(BaseModel):
     role: Literal["admin", "member"]
 
 
-team_members: List[TeamMemberOut] = []
-next_member_id: int = 1
+def _get_supabase_rest_base() -> tuple[str, str]:
+    url = os.getenv("SUPABASE_URL")
+    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    if not url or not key:
+        raise HTTPException(status_code=500, detail="Supabase is not configured for team API")
+    return url.rstrip("/"), key
+
+
+def _supabase_rest_request(
+    method: str,
+    path: str,
+    *,
+    query: str | None = None,
+    body: dict | None = None,
+    extra_headers: dict | None = None,
+) -> tuple[int, object | None]:
+    base_url, key = _get_supabase_rest_base()
+    url = f"{base_url}/rest/v1/{path}"
+    if query:
+        url = f"{url}?{query}"
+
+    headers = {
+        "apikey": key,
+        "Authorization": f"Bearer {key}",
+        "Accept": "application/json",
+    }
+    if body is not None:
+        headers["Content-Type"] = "application/json"
+    if extra_headers:
+        headers.update(extra_headers)
+
+    data = json.dumps(body).encode("utf-8") if body is not None else None
+    req = urlrequest.Request(url, headers=headers, method=method, data=data)
+
+    try:
+        with urlrequest.urlopen(req, timeout=10) as resp:
+            status = resp.getcode()
+            raw = resp.read().decode("utf-8").strip()
+            if not raw:
+                return status, None
+            try:
+                parsed = json.loads(raw)
+            except json.JSONDecodeError:
+                parsed = {"raw": raw}
+            return status, parsed
+    except urlerror.HTTPError as e:
+        detail = e.read().decode("utf-8").strip() or e.reason
+        raise HTTPException(status_code=e.code, detail=detail)
+    except urlerror.URLError as e:
+        raise HTTPException(status_code=502, detail=f"Supabase unreachable: {e.reason}")
+    except Exception as e:  # pragma: no cover - safety net
+        raise HTTPException(status_code=500, detail=f"Supabase error: {e}")
 
 
 @app.get("/team", response_model=List[TeamMemberOut])
 def list_team() -> List[TeamMemberOut]:
-    return team_members
+    """List team members stored in the Supabase `team_members` table.
+
+    This uses Supabase's free PostgREST API; no paid features are required.
+    """
+
+    status, data = _supabase_rest_request(
+        "GET",
+        "team_members",
+        query="select=id,email,role",
+    )
+    if status != 200:
+        raise HTTPException(status_code=502, detail="Failed to load team members from Supabase")
+
+    rows = data or []
+    return [TeamMemberOut(id=row["id"], email=row["email"], role=row["role"]) for row in rows]
 
 
 @app.post("/team/add", response_model=TeamMemberOut)
 def add_member(payload: TeamAddRequest) -> TeamMemberOut:
-    """Add a team member while enforcing subscription limits.
+    """Add a team member while enforcing subscription limits using Supabase storage.
 
     - Free plan: max 2 members
     - Pro plan: max 10 members
     """
 
-    global next_member_id
+    # Load existing members to enforce limits and uniqueness.
+    existing = list_team()
 
-    if any(m.email.lower() == payload.email.lower() for m in team_members):
+    if any(m.email.lower() == payload.email.lower() for m in existing):
         raise HTTPException(status_code=400, detail="Member with this email already exists")
 
     limit = 2 if payload.plan == "free" else 10
-    if len(team_members) >= limit:
+    if len(existing) >= limit:
         raise HTTPException(
             status_code=403,
             detail=f"{payload.plan.capitalize()} plan is limited to {limit} team members.",
         )
 
-    member = TeamMemberOut(id=next_member_id, email=payload.email, role=payload.role)
-    next_member_id += 1
-    team_members.append(member)
-    return member
+    status, data = _supabase_rest_request(
+        "POST",
+        "team_members",
+        body={"email": payload.email, "role": payload.role},
+        extra_headers={"Prefer": "return=representation"},
+    )
+
+    if status not in (200, 201):
+        raise HTTPException(status_code=502, detail="Failed to add member in Supabase")
+
+    rows = data or []
+    if not rows:
+        raise HTTPException(status_code=502, detail="Supabase did not return the created member")
+
+    row = rows[0]
+    return TeamMemberOut(id=row["id"], email=row["email"], role=row["role"])
 
 
 @app.patch("/team/{member_id}/role", response_model=TeamMemberOut)
@@ -170,18 +251,28 @@ def update_member_role(
     """Update a member's role.
 
     Only callers acting as an admin are allowed to change roles.
-    This is a simple role-based access example for the in-memory API.
     """
 
     if actor_role != "admin":
         raise HTTPException(status_code=403, detail="Only admins can update roles")
 
-    member = next((m for m in team_members if m.id == member_id), None)
-    if member is None:
+    status, data = _supabase_rest_request(
+        "PATCH",
+        "team_members",
+        query=f"id=eq.{member_id}&select=id,email,role",
+        body={"role": update.role},
+        extra_headers={"Prefer": "return=representation"},
+    )
+
+    if status not in (200, 204):
+        raise HTTPException(status_code=502, detail="Failed to update member role in Supabase")
+
+    rows = data or []
+    if not rows:
         raise HTTPException(status_code=404, detail="Member not found")
 
-    member.role = update.role
-    return member
+    row = rows[0]
+    return TeamMemberOut(id=row["id"], email=row["email"], role=row["role"])
 
 
 @app.delete("/team/{member_id}", status_code=204)
@@ -197,9 +288,17 @@ def remove_member(
     if actor_role != "admin":
         raise HTTPException(status_code=403, detail="Only admins can remove members")
 
-    for idx, member in enumerate(team_members):
-        if member.id == member_id:
-            del team_members[idx]
-            return
+    status, _ = _supabase_rest_request(
+        "DELETE",
+        "team_members",
+        query=f"id=eq.{member_id}",
+    )
+
+    if status == 204:
+        return
+
+    if status == 200:
+        # Some PostgREST configs may return 200 with a body, treat as success.
+        return
 
     raise HTTPException(status_code=404, detail="Member not found")
