@@ -19,7 +19,7 @@ __pycache__/
 venv/
 .venv/
 
-# Env files
+# Env files (keep examples, ignore real secrets)
 .env
 .env.*
 backend/.env

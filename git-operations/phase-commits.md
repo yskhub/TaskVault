@@ -191,4 +191,59 @@ git tag phase-6
 git push origin phase-6
 ```
 
+---
+
+## Phase 7 – Deployment
+
+After Phase 7 changes (deployment docs and backend CORS configuration) are complete and Phase 6 has already been committed:
+
+```bash
+# Ensure you are up to date
+cd D:/onlyai/Assignment_2/TaskVault
+git pull
+
+# Stage files changed in Phase 7
+git add backend/main.py \
+	docs/phase-7-deployment.md \
+	walkthrough/phase-7-walkthrough.md \
+	README.md
+
+# Commit with a Phase 7 message
+git commit -m "Phase 7: deployment docs and backend CORS config"
+
+# Push to remote
+git push origin main
+
+# (Optional) tag for Phase 7
+git tag phase-7
+git push origin phase-7
+```
+
+---
+
+## Phase 8 – Security & Best Practices
+
+After Phase 8 changes (security documentation, scrubbed env examples) are complete and Phase 7 has already been committed:
+
+```bash
+# Ensure you are up to date
+cd D:/onlyai/Assignment_2/TaskVault
+git pull
+
+# Stage files changed in Phase 8
+git add backend/.env.example \
+	docs/phase-8-security-best-practices.md \
+	walkthrough/phase-8-walkthrough.md
+
+# Commit with a Phase 8 message
+git commit -m "Phase 8: security documentation and env hardening"
+
+# Push to remote
+git push origin main
+
+# (Optional) tag for Phase 8
+git tag phase-8
+git push origin phase-8
+```
+
 Adjust paths or messages as needed based on your exact changes.

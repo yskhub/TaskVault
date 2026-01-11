@@ -12,6 +12,7 @@ This repo is organized and versioned by implementation phases that match the pro
 - **Phase 5** – Dashboard & analytics via `/analytics/overview` and `/dashboard` (charts).
  - **Phase 6** – Optional features: mock plan upgrades/downgrades, usage limit alerts, and enhanced analytics.
  - **Phase 7** – Deployment guidance for Vercel (frontend) and a hosted FastAPI backend.
+ - **Phase 8** – Security and best practices: env/secret hygiene, CORS configuration, and RLS guidance.
 
 Each phase has:
 - A design/spec document under `Development_Phases/`.
@@ -29,11 +30,12 @@ The `main` branch contains a linear set of phase commits plus the initial GitHub
 - Tag **phase-4-supabase** → Commit "Phase 4: Supabase team persistence"
  - Tag **phase-5** → Commit "Phase 5: dashboard analytics backend+frontend"
  - Tag **phase-6** → Commit "Phase 6: optional features and mock plan upgrades"
+ - Tag **phase-7** → Commit "Phase 7: deployment docs and backend CORS config"
 
 You can check out any phase with:
 
 ```bash
-git checkout phase-1   # or phase-2, phase-3, phase-4, phase-4-supabase, phase-5, phase-6
+git checkout phase-1   # or phase-2, phase-3, phase-4, phase-4-supabase, phase-5, phase-6, phase-7
 ```
 
 The actual Git commands used to create these commits and tags are documented in git-operations/phase-commits.md.
