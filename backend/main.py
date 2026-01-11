@@ -302,3 +302,83 @@ def remove_member(
         return
 
     raise HTTPException(status_code=404, detail="Member not found")
+
+
+# -----------------------------
+# Phase 5: Dashboard & analytics
+# -----------------------------
+
+
+class WorkflowStats(BaseModel):
+    total: int
+    with_steps: int
+    without_steps: int
+    total_steps: int
+    pending_steps: int
+    in_progress_steps: int
+    completed_steps: int
+
+
+class TeamStats(BaseModel):
+    total_members: int
+    admins: int
+    members: int
+
+
+class AnalyticsOverview(BaseModel):
+    workflows: WorkflowStats
+    team: TeamStats
+
+
+@app.get("/analytics/overview", response_model=AnalyticsOverview)
+def analytics_overview() -> AnalyticsOverview:
+    """Return high-level workflow and team usage metrics.
+
+    - Workflow stats are computed from the in-memory Phase 3 workflows list.
+    - Team stats are computed from the Supabase-backed team_members table.
+    """
+
+    # Workflow statistics (in-memory)
+    total_workflows = len(workflows)
+    with_steps = sum(1 for w in workflows if w.steps)
+    without_steps = total_workflows - with_steps
+
+    pending_steps = 0
+    in_progress_steps = 0
+    completed_steps = 0
+
+    for w in workflows:
+        for s in w.steps:
+            status = s.status or "pending"
+            if status == "pending":
+                pending_steps += 1
+            elif status == "in_progress":
+                in_progress_steps += 1
+            elif status == "completed":
+                completed_steps += 1
+
+    total_steps = pending_steps + in_progress_steps + completed_steps
+
+    workflow_stats = WorkflowStats(
+        total=total_workflows,
+        with_steps=with_steps,
+        without_steps=without_steps,
+        total_steps=total_steps,
+        pending_steps=pending_steps,
+        in_progress_steps=in_progress_steps,
+        completed_steps=completed_steps,
+    )
+
+    # Team statistics (Supabase-backed via PostgREST)
+    members_list = list_team()
+    total_members = len(members_list)
+    admins = sum(1 for m in members_list if m.role == "admin")
+    members = sum(1 for m in members_list if m.role == "member")
+
+    team_stats = TeamStats(
+        total_members=total_members,
+        admins=admins,
+        members=members,
+    )
+
+    return AnalyticsOverview(workflows=workflow_stats, team=team_stats)

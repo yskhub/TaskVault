@@ -92,4 +92,73 @@ git tag phase-3
 git push origin phase-3
 ```
 
+---
+
+## Phase 4 – User & Team Management (in-memory → Supabase)
+
+After Phase 4 changes (team endpoints, `/team` UI, and later Supabase-backed persistence) are complete and Phase 3 has already been committed:
+
+```bash
+# Ensure you are up to date
+cd D:/onlyai/Assignment_2/TaskVault
+git pull
+
+# Stage files for the in-memory team implementation
+git add backend/main.py \
+	docs/phase-4-user-team-management.md \
+	walkthrough/phase-4-walkthrough.md \
+	taskvault-frontend/app/team/
+
+# Commit for the in-memory version
+git commit -m "Phase 4: user & team management"
+
+# Push to remote
+git push origin main
+
+# Tag the in-memory implementation
+git tag phase-4
+git push origin phase-4
+
+# Later, after refactoring to Supabase-backed persistence
+git add backend/main.py \
+	docs/phase-4-user-team-management.md \
+	walkthrough/phase-4-walkthrough.md \
+	taskvault-frontend/app/team/page.tsx
+
+git commit -m "Phase 4: Supabase team persistence"
+git push origin main
+
+git tag phase-4-supabase
+git push origin phase-4-supabase
+```
+
+---
+
+## Phase 5 – Dashboard & Analytics
+
+After Phase 5 changes (analytics endpoint, `/dashboard` UI, docs, walkthrough) are complete and Phase 4 has already been committed:
+
+```bash
+# Ensure you are up to date
+cd D:/onlyai/Assignment_2/TaskVault
+git pull
+
+# Stage files changed in Phase 5
+git add backend/main.py \
+	docs/phase-5-dashboard-analytics.md \
+	walkthrough/phase-5-walkthrough.md \
+	taskvault-frontend/app/dashboard/page.tsx \
+	taskvault-frontend/package.json
+
+# Commit with a Phase 5 message
+git commit -m "Phase 5: dashboard analytics backend+frontend"
+
+# Push to remote
+git push origin main
+
+# (Optional) tag for Phase 5
+git tag phase-5
+git push origin phase-5
+```
+
 Adjust paths or messages as needed based on your exact changes.
