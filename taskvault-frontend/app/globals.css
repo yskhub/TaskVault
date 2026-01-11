@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global SaaS defaults */
+html, body {
+  height: 100%;
+}
