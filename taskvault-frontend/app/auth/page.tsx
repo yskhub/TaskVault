@@ -32,7 +32,10 @@ export default function AuthPage() {
         );
       }
     } catch (err) {
-      setMessage("Something went wrong. Please try again.");
+      console.error("Supabase auth error", err);
+      const fallback = "Something went wrong. Please try again.";
+      const msg = err instanceof Error ? err.message : String(err ?? "");
+      setMessage(msg || fallback);
     } finally {
       setLoading(false);
     }
