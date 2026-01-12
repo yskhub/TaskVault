@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { Layers, ShieldCheck, Workflow, Users, BarChart3 } from "lucide-react";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 
 const sections = [
   {
@@ -33,6 +35,39 @@ const sections = [
     title: "Analytics Dashboard",
     badge: "Analytics",
     description: "Visualize workflows, step statuses, and team composition.",
+  },
+];
+
+const phases = [
+  {
+    title: "Phase 1 · Setup",
+    description: "Initialize TaskVault locally with FastAPI, Next.js, and Supabase.",
+    icon: Layers,
+    spotlightColor: "rgba(148, 163, 184, 0.3)",
+  },
+  {
+    title: "Phase 2 · Auth & Plans",
+    description: "Wire up authentication and plan-aware guards across the app.",
+    icon: ShieldCheck,
+    spotlightColor: "rgba(56, 189, 248, 0.25)",
+  },
+  {
+    title: "Phase 3 · Workflows",
+    description: "Design task workflows, steps, and status tracking across your team.",
+    icon: Workflow,
+    spotlightColor: "rgba(129, 140, 248, 0.25)",
+  },
+  {
+    title: "Phase 4 · Team & Roles",
+    description: "Invite members, manage roles, and respect free versus pro limits.",
+    icon: Users,
+    spotlightColor: "rgba(96, 165, 250, 0.25)",
+  },
+  {
+    title: "Phase 5 · Analytics",
+    description: "Surface workflow health and adoption in a focused dashboard.",
+    icon: BarChart3,
+    spotlightColor: "rgba(45, 212, 191, 0.25)",
   },
 ];
 
@@ -108,6 +143,51 @@ export default function Home() {
               </Link>
             </motion.div>
           ))}
+        </motion.section>
+
+        <motion.section
+          className="mt-4 space-y-6"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut", delay: 0.16 }}
+        >
+          <div className="text-center space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
+              Implementation Phases
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-50">
+              How TaskVault comes together in 5 phases
+            </h2>
+            <p className="text-sm sm:text-base text-slate-200 max-w-2xl mx-auto">
+              Follow these phases to understand how authentication, workflows, teams, and analytics
+              connect into a single, minimal SaaS console.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3 xl:grid-cols-5">
+            {phases.map((phase) => {
+              const Icon = phase.icon;
+              return (
+                <SpotlightCard
+                  key={phase.title}
+                  className="p-5 h-full flex flex-col gap-4 bg-neutral-950/60"
+                  spotlightColor={phase.spotlightColor}
+                >
+                  <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-neutral-800 border border-neutral-700">
+                    <Icon className="h-5 w-5 text-slate-100" />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-semibold text-white mb-1">
+                      {phase.title}
+                    </h3>
+                    <p className="text-sm text-neutral-300 leading-relaxed">
+                      {phase.description}
+                    </p>
+                  </div>
+                </SpotlightCard>
+              );
+            })}
+          </div>
         </motion.section>
 
         <motion.section
