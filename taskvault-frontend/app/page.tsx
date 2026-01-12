@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+import { DisplayCardsDemo } from "@/components/ui/demo";
+
 const sections = [
   {
     href: "/auth",
@@ -103,6 +105,8 @@ export default function Home() {
             </Link>
           ))}
         </motion.section>
+
+        <DisplayCardsDemo />
 
         <motion.section
           className="mt-4 grid gap-5 md:grid-cols-3 text-sm text-slate-300"

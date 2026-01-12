@@ -10,7 +10,11 @@ module.exports = {
     extend: {
       colors: {
         primary: "#0F172A",   // dark slate
-        accent: "#2563EB"     // blue CTA
+        accent: "#2563EB",    // blue CTA
+        background: "#020617",
+        muted: "#020617",
+        "muted-foreground": "#9CA3AF",
+        border: "#1F2937"
       }
     }
   },
