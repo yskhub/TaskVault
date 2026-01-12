@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from urllib import error as urlerror, request as urlrequest
 
 from fastapi import FastAPI, HTTPException
@@ -12,7 +13,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
 
-from .supabase_client import check_supabase_connection
+from supabase_client import check_supabase_connection
 
 
 app = FastAPI()
@@ -36,12 +37,42 @@ app.add_middleware(
 
 @app.get("/health")
 def health_check():
+    """Lightweight health check for the backend and Supabase.
+
+    This uses only free capabilities:
+
+    - A simple FastAPI handler in this backend
+    - Supabase's public `/auth/v1/health` endpoint
+
+    No paid services or add-ons are required.
+    """
+    start = time.perf_counter()
     ok, detail = check_supabase_connection()
+    total_latency_ms = round((time.perf_counter() - start) * 1000, 1)
+
+    # detail is provided by `check_supabase_connection` and should already be a
+    # dictionary with optional `latency_ms`, but we keep this defensive in case
+    # the implementation changes.
+    if isinstance(detail, dict):
+        supabase_latency_ms = detail.get("latency_ms")
+        parsed_detail: object = detail
+    else:
+        supabase_latency_ms = None
+        try:
+            parsed_detail = json.loads(detail)
+        except Exception:  # pragma: no cover - defensive only
+            parsed_detail = detail
+
     return {
-        "status": "ok",
+        "status": "ok" if ok else "degraded",
+        "backend": {
+            "ok": True,
+            "latency_ms": total_latency_ms,
+        },
         "supabase": {
             "ok": ok,
-            "detail": detail,
+            "latency_ms": supabase_latency_ms,
+            "detail": parsed_detail,
         },
     }
 

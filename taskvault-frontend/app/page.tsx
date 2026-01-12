@@ -1,36 +1,37 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 const sections = [
   {
     href: "/auth",
     title: "Authentication",
-    badge: "Phase 2",
+    badge: "Auth",
     description: "Email sign-up and sign-in powered by Supabase Auth.",
   },
   {
     href: "/account",
     title: "Account & Plans",
-    badge: "Phase 2 & 6",
+    badge: "Plans",
     description: "See your profile and toggle between Free and Pro plans.",
   },
   {
     href: "/workflows",
     title: "Workflows",
-    badge: "Phase 3",
+    badge: "Workflows",
     description: "Design lightweight workflows with ordered steps for your tasks.",
   },
   {
     href: "/team",
     title: "Team Management",
-    badge: "Phase 4 & 6",
+    badge: "Team",
     description: "Invite teammates, assign roles, and respect Free/Pro limits.",
   },
   {
     href: "/dashboard",
     title: "Analytics Dashboard",
-    badge: "Phase 5 & 6",
+    badge: "Analytics",
     description: "Visualize workflows, step statuses, and team composition.",
   },
 ];
@@ -39,9 +40,14 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-primary text-white px-4 py-14 sm:px-10">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-16">
-        <header className="space-y-4">
+        <motion.header
+          className="space-y-4"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
           <span className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/60 px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-slate-300">
-            TaskVault · Phases 1–8
+            TaskVault · Full stack demo
           </span>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -68,9 +74,14 @@ export default function Home() {
               </Link>
             </div>
           </div>
-        </header>
+        </motion.header>
 
-        <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <motion.section
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }}
+        >
           {sections.map((item) => (
             <Link
               key={item.href}
@@ -91,9 +102,14 @@ export default function Home() {
               </p>
             </Link>
           ))}
-        </section>
+        </motion.section>
 
-        <section className="mt-4 grid gap-5 md:grid-cols-3 text-sm text-slate-300">
+        <motion.section
+          className="mt-4 grid gap-5 md:grid-cols-3 text-sm text-slate-300"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut", delay: 0.18 }}
+        >
           <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-5 min-h-[7rem]">
             <p className="font-semibold text-slate-100 mb-2">Built for free tiers</p>
             <p>
@@ -102,10 +118,10 @@ export default function Home() {
             </p>
           </div>
           <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-5 min-h-[7rem]">
-            <p className="font-semibold text-slate-100 mb-2">Phase-by-phase history</p>
+            <p className="font-semibold text-slate-100 mb-2">Implementation history</p>
             <p>
-              Each phase is documented and tagged in git so you can step through the
-              project evolution.
+              Every major step is documented and tagged in git so you can step through
+              the project evolution.
             </p>
           </div>
           <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-5 min-h-[7rem]">
@@ -115,7 +131,7 @@ export default function Home() {
               existing foundation.
             </p>
           </div>
-        </section>
+        </motion.section>
       </div>
     </main>
   );

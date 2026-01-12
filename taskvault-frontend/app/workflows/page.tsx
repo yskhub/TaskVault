@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
@@ -47,6 +48,25 @@ export default function WorkflowsPage() {
     setSteps((prev) => [...prev, { title: "", assigned_to: "" }]);
   }
 
+  function updateWorkflowStepStatus(
+    workflowId: number,
+    stepIndex: number,
+    status: Step["status"]
+  ) {
+    setWorkflows((prev) =>
+      prev.map((wf) =>
+        wf.id === workflowId
+          ? {
+              ...wf,
+              steps: wf.steps.map((step, idx) =>
+                idx === stepIndex ? { ...step, status } : step
+              ),
+            }
+          : wf
+      )
+    );
+  }
+
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) return;
@@ -77,18 +97,28 @@ export default function WorkflowsPage() {
   return (
     <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8">
       <div className="mx-auto flex max-w-5xl flex-col gap-8">
-        <header className="space-y-2">
+        <motion.header
+          className="space-y-2"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+        >
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-            Phase 3 · Workflow management
+            Workflow management
           </p>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Workflows</h1>
           <p className="text-sm text-slate-300 max-w-2xl">
             Create lightweight workflows, assign steps to team members, and track basic
-            status. This is an in-memory prototype for Phase 3.
+            status. This is an in-memory prototype.
           </p>
-        </header>
+        </motion.header>
 
-        <section className="rounded-xl border border-slate-800 bg-slate-900/70 p-6 space-y-4 shadow-lg">
+        <motion.section
+          className="rounded-xl border border-slate-800 bg-slate-900/70 p-6 space-y-4 shadow-lg"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut", delay: 0.05 }}
+        >
           <h2 className="text-lg font-semibold">Create workflow</h2>
           <form onSubmit={handleCreate} className="space-y-4">
             <div className="space-y-1 text-sm">
@@ -108,7 +138,7 @@ export default function WorkflowsPage() {
                 <button
                   type="button"
                   onClick={addStepRow}
-                  className="rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-800"
+                  className="rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-800 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0"
                 >
                   + Add step
                 </button>
@@ -152,14 +182,19 @@ export default function WorkflowsPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/40 hover:bg-blue-500 disabled:opacity-60"
+              className="mt-2 inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/40 hover:bg-blue-500 disabled:opacity-60 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 disabled:hover:translate-y-0"
             >
               {loading ? "Creating..." : "Create workflow"}
             </button>
           </form>
-        </section>
+        </motion.section>
 
-        <section className="space-y-3">
+        <motion.section
+          className="space-y-3"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
+        >
           <h2 className="text-lg font-semibold">Existing workflows</h2>
           {workflows.length === 0 ? (
             <p className="text-sm text-slate-400">No workflows yet. Create your first one above.</p>
@@ -168,7 +203,7 @@ export default function WorkflowsPage() {
               {workflows.map((wf) => (
                 <div
                   key={wf.id}
-                  className="rounded-xl border border-slate-800 bg-slate-900/80 p-4 space-y-2"
+                  className="rounded-xl border border-slate-800 bg-slate-900/80 p-4 space-y-3"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="text-sm font-semibold text-white">{wf.title}</h3>
@@ -176,6 +211,32 @@ export default function WorkflowsPage() {
                       {wf.steps.length} step{wf.steps.length === 1 ? "" : "s"}
                     </span>
                   </div>
+
+                  {wf.steps.length > 0 && (
+                    <div className="text-[11px] text-slate-400">
+                      {(() => {
+                        const completed = wf.steps.filter(
+                          (s) => (s.status ?? "pending") === "completed"
+                        ).length;
+                        const total = wf.steps.length;
+                        const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+                        return (
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between">
+                              <span>Progress</span>
+                              <span className="text-slate-300 font-medium">{pct}%</span>
+                            </div>
+                            <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+                              <div
+                                className="h-full rounded-full bg-emerald-400 transition-all"
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
                   {wf.steps.length > 0 && (
                     <ol className="mt-1 space-y-1 text-xs text-slate-300">
                       {wf.steps.map((step, index) => (
@@ -185,9 +246,36 @@ export default function WorkflowsPage() {
                             {" "}
                             <span className="text-slate-400">· {step.assigned_to}</span>
                           </span>
-                          <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-300">
-                            {step.status ?? "pending"}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            {["pending", "in_progress", "completed"].map((s) => {
+                              const value = s as Step["status"];
+                              const active = (step.status ?? "pending") === value;
+                              const label =
+                                value === "pending"
+                                  ? "Pending"
+                                  : value === "in_progress"
+                                  ? "In progress"
+                                  : "Done";
+                              return (
+                                <button
+                                  key={s}
+                                  type="button"
+                                  onClick={() => updateWorkflowStepStatus(wf.id, index, value)}
+                                  className={`inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-[10px] font-medium transition ${
+                                    active
+                                      ? value === "completed"
+                                        ? "border-emerald-400 bg-emerald-500/20 text-emerald-100"
+                                        : value === "in_progress"
+                                        ? "border-sky-400 bg-sky-500/20 text-sky-100"
+                                        : "border-slate-400 bg-slate-500/20 text-slate-100"
+                                      : "border-slate-700 bg-slate-900/80 text-slate-300 hover:border-slate-500/80"
+                                  }`}
+                                >
+                                  {label}
+                                </button>
+                              );
+                            })}
+                          </div>
                         </li>
                       ))}
                     </ol>
@@ -196,7 +284,7 @@ export default function WorkflowsPage() {
               ))}
             </div>
           )}
-        </section>
+        </motion.section>
       </div>
     </main>
   );

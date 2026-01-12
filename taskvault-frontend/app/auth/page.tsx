@@ -10,6 +10,7 @@ export default function AuthPage() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,6 +40,40 @@ export default function AuthPage() {
     }
   }
 
+  async function handleResetPassword() {
+    if (!email) {
+      setMessage("Enter your email above to receive a reset link.");
+      return;
+    }
+
+    setResetting(true);
+    setMessage(null);
+
+    try {
+      const redirectTo =
+        typeof window !== "undefined" ? `${window.location.origin}/auth` : undefined;
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo,
+      });
+
+      if (error) {
+        setMessage(error.message);
+      } else {
+        setMessage(
+          "If an account exists for this email, a password reset link has been sent."
+        );
+      }
+    } catch (err) {
+      console.error("Supabase reset password error", err);
+      const fallback = "Unable to start password reset. Please try again.";
+      const msg = err instanceof Error ? err.message : String(err ?? "");
+      setMessage(msg || fallback);
+    } finally {
+      setResetting(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
       <div className="mx-auto flex min-h-screen max-w-7xl items-center px-6 py-10 sm:px-10">
@@ -52,7 +87,7 @@ export default function AuthPage() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/60 px-3 py-1 text-xs font-medium text-slate-300">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              Secure workspace access · Phase 2
+              Secure workspace access
             </div>
 
             <div className="space-y-3">
@@ -80,7 +115,7 @@ export default function AuthPage() {
                 <p className="mt-1 text-slate-400">Supabase Auth & RLS from day one.</p>
               </div>
               <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-3">
-                <p className="font-semibold text-slate-100">Phase-based build</p>
+                <p className="font-semibold text-slate-100">Incremental build</p>
                 <p className="mt-1 text-slate-400">Evolves cleanly as your product grows.</p>
               </div>
             </div>
@@ -107,7 +142,7 @@ export default function AuthPage() {
                 </p>
               </div>
               <span className="rounded-full border border-slate-700 bg-slate-900/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-300">
-                Phase 2 · Auth
+                Email & password auth
               </span>
             </div>
 
@@ -157,6 +192,24 @@ export default function AuthPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2.5 text-base text-white outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                 />
+              </div>
+
+              <div className="flex items-center justify-between text-xs sm:text-sm text-slate-400">
+                <span>
+                  {mode === "signin"
+                    ? "Use your TaskVault password."
+                    : "You'll use this password to sign in."}
+                </span>
+                {mode === "signin" && (
+                  <button
+                    type="button"
+                    onClick={handleResetPassword}
+                    disabled={loading || resetting}
+                    className="font-semibold text-accent hover:text-blue-400 disabled:opacity-60"
+                  >
+                    {resetting ? "Sending reset..." : "Forgot password?"}
+                  </button>
+                )}
               </div>
 
               <button

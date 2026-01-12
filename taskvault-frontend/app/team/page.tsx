@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
+import { motion } from "framer-motion";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
@@ -192,18 +193,28 @@ export default function TeamPage() {
   return (
     <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8">
       <div className="mx-auto flex max-w-5xl flex-col gap-8">
-        <header className="space-y-2">
+        <motion.header
+          className="space-y-2"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+        >
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-            Phase 4 · User & team management
+            User & team management
           </p>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Team</h1>
           <p className="text-sm text-slate-300 max-w-2xl">
             Manage a lightweight in-memory team for this workspace. This prototype enforces
             simple subscription limits: Free up to 2 members, Pro up to 10 members.
           </p>
-        </header>
+        </motion.header>
 
-        <section className="rounded-xl border border-slate-800 bg-slate-900/70 p-6 space-y-4 shadow-lg">
+        <motion.section
+          className="rounded-xl border border-slate-800 bg-slate-900/70 p-6 space-y-4 shadow-lg"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut", delay: 0.05 }}
+        >
           <div className="flex items-center justify-between gap-3 text-sm">
             <div>
               <div className="text-slate-300">Signed in as</div>
@@ -266,12 +277,12 @@ export default function TeamPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/40 hover:bg-blue-500 disabled:opacity-60"
+              className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/40 hover:bg-blue-500 disabled:opacity-60 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 disabled:hover:translate-y-0"
             >
               {submitting ? "Adding..." : "Add member"}
             </button>
           </form>
-        </section>
+        </motion.section>
 
         <section className="space-y-3">
           <h2 className="text-lg font-semibold">Current team</h2>
@@ -310,7 +321,7 @@ export default function TeamPage() {
                                 <button
                                   type="button"
                                   onClick={() => updateRole(member.id, "admin")}
-                                  className="rounded-md border border-purple-500/60 bg-purple-600/20 px-3 py-1 font-semibold text-purple-100 hover:bg-purple-600/30"
+                                  className="rounded-md border border-purple-500/60 bg-purple-600/20 px-3 py-1 font-semibold text-purple-100 hover:bg-purple-600/30 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0"
                                 >
                                   Make admin
                                 </button>
@@ -319,7 +330,7 @@ export default function TeamPage() {
                                 <button
                                   type="button"
                                   onClick={() => updateRole(member.id, "member")}
-                                  className="rounded-md border border-slate-600 bg-slate-800 px-3 py-1 font-semibold text-slate-100 hover:bg-slate-700"
+                                  className="rounded-md border border-slate-600 bg-slate-800 px-3 py-1 font-semibold text-slate-100 hover:bg-slate-700 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0"
                                 >
                                   Make member
                                 </button>
@@ -327,7 +338,7 @@ export default function TeamPage() {
                               <button
                                 type="button"
                                 onClick={() => removeMember(member.id)}
-                                className="rounded-md border border-red-500/60 bg-red-600/20 px-3 py-1 font-semibold text-red-100 hover:bg-red-600/30"
+                                className="rounded-md border border-red-500/60 bg-red-600/20 px-3 py-1 font-semibold text-red-100 hover:bg-red-600/30 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0"
                               >
                                 Remove
                               </button>

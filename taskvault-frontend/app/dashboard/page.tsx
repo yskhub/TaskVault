@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -49,11 +50,21 @@ type AnalyticsOverview = {
 
 type BackendStatus = "checking" | "ok" | "degraded" | "error";
 
+type HealthInfo = {
+  backendLatencyMs?: number;
+  supabaseLatencyMs?: number;
+  supabaseOk?: boolean;
+};
+
+type ActiveDrill = "workflows" | "steps" | "team" | "none";
+
 export default function DashboardPage() {
   const [data, setData] = useState<AnalyticsOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [backendStatus, setBackendStatus] = useState<BackendStatus>("checking");
+  const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
+  const [activeDrill, setActiveDrill] = useState<ActiveDrill>("none");
 
   async function loadAnalytics() {
     try {
@@ -77,16 +88,30 @@ export default function DashboardPage() {
       const res = await fetch(`${API_BASE_URL}/health`);
       if (!res.ok) {
         setBackendStatus("error");
+        setHealthInfo(null);
         return;
       }
       const json = await res.json();
-      if (json?.supabase?.ok === true) {
+
+      const supabaseOk = json?.supabase?.ok === true;
+      const backendOk = json?.backend?.ok !== false; // default to true if missing
+
+      if (backendOk && supabaseOk) {
         setBackendStatus("ok");
-      } else {
+      } else if (backendOk && !supabaseOk) {
         setBackendStatus("degraded");
+      } else {
+        setBackendStatus("error");
       }
+
+      setHealthInfo({
+        backendLatencyMs: json?.backend?.latency_ms ?? undefined,
+        supabaseLatencyMs: json?.supabase?.latency_ms ?? undefined,
+        supabaseOk,
+      });
     } catch {
       setBackendStatus("error");
+      setHealthInfo(null);
     }
   }
 
@@ -97,8 +122,55 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-primary text-white">
-        <p className="text-sm text-slate-200">Loading dashboard...</p>
+      <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col gap-8 animate-pulse">
+          <header className="space-y-3">
+            <div className="h-3 w-40 rounded-full bg-slate-800/80" />
+            <div className="h-8 w-64 rounded-lg bg-slate-800/80" />
+            <div className="h-4 w-full max-w-xl rounded-lg bg-slate-800/70" />
+          </header>
+
+          <section className="flex justify-start sm:justify-end">
+            <div className="mt-1 inline-flex w-full max-w-xs items-start gap-3 rounded-xl border border-slate-800 bg-slate-950/70 px-3 py-2">
+              <span className="mt-[3px] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-slate-700" />
+              <div className="flex flex-col gap-1 w-full">
+                <div className="h-3 w-32 rounded-full bg-slate-800" />
+                <div className="h-3 w-40 rounded-full bg-slate-900" />
+              </div>
+            </div>
+          </section>
+
+          <section className="grid gap-4 md:grid-cols-3">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 shadow space-y-3">
+              <div className="h-3 w-24 rounded-full bg-slate-800" />
+              <div className="h-7 w-16 rounded-md bg-slate-800" />
+              <div className="h-3 w-40 rounded-full bg-slate-900" />
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 shadow space-y-3">
+              <div className="h-3 w-28 rounded-full bg-slate-800" />
+              <div className="h-7 w-20 rounded-md bg-slate-800" />
+              <div className="h-3 w-44 rounded-full bg-slate-900" />
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 shadow space-y-3">
+              <div className="h-3 w-16 rounded-full bg-slate-800" />
+              <div className="h-7 w-16 rounded-md bg-slate-800" />
+              <div className="h-3 w-32 rounded-full bg-slate-900" />
+            </div>
+          </section>
+
+          <section className="grid gap-6 lg:grid-cols-2 items-start">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-5 shadow space-y-4">
+              <div className="h-4 w-40 rounded-full bg-slate-800" />
+              <div className="h-3 w-52 rounded-full bg-slate-900" />
+              <div className="h-56 rounded-xl bg-slate-950/80" />
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-5 shadow space-y-4">
+              <div className="h-4 w-40 rounded-full bg-slate-800" />
+              <div className="h-3 w-64 rounded-full bg-slate-900" />
+              <div className="h-56 rounded-xl bg-slate-950/80" />
+            </div>
+          </section>
+        </div>
       </main>
     );
   }
@@ -166,76 +238,164 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
-        <header className="space-y-2">
+        <motion.header
+          className="space-y-2"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+        >
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-            Phase 5 · Dashboard & analytics
+            Dashboard & analytics
           </p>
-          <div className="flex items-center justify-between gap-3">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
-            <span
-              className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-medium
-                ${
-                  backendStatus === "ok"
-                    ? "border-emerald-500/60 bg-emerald-500/10 text-emerald-300"
-                    : backendStatus === "degraded"
-                    ? "border-amber-400/60 bg-amber-400/10 text-amber-200"
-                    : backendStatus === "error"
-                    ? "border-rose-500/60 bg-rose-500/10 text-rose-200"
-                    : "border-slate-600/60 bg-slate-800/70 text-slate-300"
-                }`}
-            >
-              <span
-                className={`h-1.5 w-1.5 rounded-full
-                  ${
-                    backendStatus === "ok"
-                      ? "bg-emerald-400"
-                      : backendStatus === "degraded"
-                      ? "bg-amber-300"
-                      : backendStatus === "error"
-                      ? "bg-rose-400"
-                      : "bg-slate-400"
-                  }`}
-              />
-              <span>
-                {backendStatus === "ok"
-                  ? "Backend: Online"
-                  : backendStatus === "degraded"
-                  ? "Backend: Degraded"
-                  : backendStatus === "error"
-                  ? "Backend: Offline"
-                  : "Backend: Checking..."}
-              </span>
-            </span>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-sm text-slate-300 max-w-2xl">
             See a quick overview of how TaskVault is being used: workflows in motion and your
             current team footprint.
           </p>
-        </header>
+        </motion.header>
 
-        <section className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 shadow">
+        <motion.section
+          className="flex justify-start sm:justify-end"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut", delay: 0.05 }}
+        >
+          <div
+            className={`mt-1 inline-flex w-full max-w-xs items-start gap-2 rounded-xl border bg-slate-950/70 px-3 py-1.5 text-[10px] sm:text-[11px] font-medium
+              ${
+                backendStatus === "ok"
+                  ? "border-emerald-500/50"
+                  : backendStatus === "degraded"
+                  ? "border-amber-400/60"
+                  : backendStatus === "error"
+                  ? "border-rose-500/70"
+                  : "border-slate-700/70"
+              }`}
+          >
+            <span
+              className={`mt-[3px] h-1.5 w-1.5 flex-shrink-0 rounded-full
+                ${
+                  backendStatus === "ok"
+                    ? "bg-emerald-400"
+                    : backendStatus === "degraded"
+                    ? "bg-amber-300"
+                    : backendStatus === "error"
+                    ? "bg-rose-400"
+                    : "bg-slate-400"
+                }`}
+            />
+            <div className="flex flex-col leading-tight text-slate-100">
+              <span className="font-semibold tracking-tight">
+                {backendStatus === "ok"
+                  ? "System status · Healthy"
+                  : backendStatus === "degraded"
+                  ? "System status · Degraded"
+                  : backendStatus === "error"
+                  ? "System status · Unreachable"
+                  : "System status · Checking"}
+              </span>
+              <span className="text-[9px] sm:text-[10px] font-normal text-slate-400/90">
+                {backendStatus === "checking"
+                  ? "Verifying API and Supabase health"
+                  : `API ${
+                      healthInfo?.backendLatencyMs != null
+                        ? `${healthInfo.backendLatencyMs} ms`
+                        : "latency: n/a"
+                    } · Supabase ${
+                      healthInfo?.supabaseOk === true
+                        ? "OK"
+                        : healthInfo?.supabaseOk === false
+                        ? "issue"
+                        : "n/a"
+                    }${
+                      healthInfo?.supabaseLatencyMs != null
+                        ? ` · ${healthInfo.supabaseLatencyMs} ms`
+                        : ""
+                    }`}
+              </span>
+            </div>
+          </div>
+        </motion.section>
+
+        <motion.section
+          className="grid gap-4 md:grid-cols-3"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
+        >
+          <button
+            type="button"
+            onClick={() =>
+              setActiveDrill((prev) => (prev === "workflows" ? "none" : "workflows"))
+            }
+            className={`rounded-xl border p-4 text-left shadow transition ${
+              activeDrill === "workflows"
+                ? "border-accent bg-slate-900/90 shadow-accent/30"
+                : "border-slate-800 bg-slate-900/70 hover:border-accent/60"
+            }`}
+          >
             <p className="text-xs uppercase tracking-wide text-slate-400">Workflows</p>
             <p className="mt-2 text-3xl font-semibold">{workflow.total}</p>
             <p className="mt-1 text-xs text-slate-400">
               {workflow.with_steps} with steps · {workflow.without_steps} without steps
             </p>
-          </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 shadow">
+            {activeDrill === "workflows" && (
+              <ul className="mt-3 space-y-1 text-[11px] text-slate-300">
+                <li>
+                  • Average steps per workflow: {workflow.total === 0
+                    ? 0
+                    : (workflow.total_steps / workflow.total).toFixed(1)}
+                </li>
+                <li>• Workflows without steps are good candidates to refine next.</li>
+              </ul>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveDrill((prev) => (prev === "steps" ? "none" : "steps"))}
+            className={`rounded-xl border p-4 text-left shadow transition ${
+              activeDrill === "steps"
+                ? "border-accent bg-slate-900/90 shadow-accent/30"
+                : "border-slate-800 bg-slate-900/70 hover:border-accent/60"
+            }`}
+          >
             <p className="text-xs uppercase tracking-wide text-slate-400">Workflow steps</p>
             <p className="mt-2 text-3xl font-semibold">{workflow.total_steps}</p>
             <p className="mt-1 text-xs text-slate-400">
               {workflow.pending_steps} pending · {workflow.in_progress_steps} in progress · {" "}
               {workflow.completed_steps} completed
             </p>
-          </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 shadow">
+            {activeDrill === "steps" && (
+              <ul className="mt-3 space-y-1 text-[11px] text-slate-300">
+                <li>• Completion rate: {completionRate}% of all steps.</li>
+                <li>• Pending + in-progress indicate current operational load.</li>
+              </ul>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveDrill((prev) => (prev === "team" ? "none" : "team"))}
+            className={`rounded-xl border p-4 text-left shadow transition $${""}
+              ${
+                activeDrill === "team"
+                  ? "border-accent bg-slate-900/90 shadow-accent/30"
+                  : "border-slate-800 bg-slate-900/70 hover:border-accent/60"
+              }`}
+          >
             <p className="text-xs uppercase tracking-wide text-slate-400">Team</p>
             <p className="mt-2 text-3xl font-semibold">{team.total_members}</p>
             <p className="mt-1 text-xs text-slate-400">
               {team.admins} admins · {team.members} members
             </p>
-          </div>
+            {activeDrill === "team" && (
+              <ul className="mt-3 space-y-1 text-[11px] text-slate-300">
+                <li>• Admins handle approvals and configuration.</li>
+                <li>• Members focus on executing workflow steps.</li>
+              </ul>
+            )}
+          </button>
           <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 shadow flex flex-col justify-between">
             <div>
               <p className="text-xs uppercase tracking-wide text-slate-400">Completion rate</p>
@@ -255,10 +415,22 @@ export default function DashboardPage() {
               Refresh analytics
             </button>
           </div>
-        </section>
+        </motion.section>
 
-        <section className="grid gap-6 lg:grid-cols-2 items-start">
-          <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-5 shadow flex flex-col gap-4">
+        <motion.section
+          className="grid gap-6 lg:grid-cols-2 items-start"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut", delay: 0.16 }}
+        >
+          <div
+            className={`rounded-xl border p-5 shadow flex flex-col gap-4 transition $${""}
+              ${
+                activeDrill === "steps"
+                  ? "border-accent bg-slate-900/90 shadow-accent/30"
+                  : "border-slate-800 bg-slate-900/70"
+              }`}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-semibold text-white">Workflow step status</h2>
@@ -280,7 +452,14 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-5 shadow flex flex-col gap-4">
+          <div
+            className={`rounded-xl border p-5 shadow flex flex-col gap-4 transition $${""}
+              ${
+                activeDrill === "team"
+                  ? "border-accent bg-slate-900/90 shadow-accent/30"
+                  : "border-slate-800 bg-slate-900/70"
+              }`}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-semibold text-white">Team composition</h2>
@@ -311,7 +490,7 @@ export default function DashboardPage() {
               />
             </div>
           </div>
-        </section>
+        </motion.section>
       </div>
     </main>
   );

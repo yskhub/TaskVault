@@ -3,13 +3,20 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabaseClient";
+import { motion } from "framer-motion";
 
 type Plan = "free" | "pro";
 
 type State =
   | { status: "loading" }
   | { status: "signed_out" }
-  | { status: "ready"; email: string | null; plan: Plan };
+  | {
+      status: "ready";
+      email: string | null;
+      plan: Plan;
+      lastSignInAt: string | null;
+      sessionSummary: string | null;
+    };
 
 export default function AccountPage() {
   const [state, setState] = useState<State>({ status: "loading" });
@@ -46,7 +53,26 @@ export default function AccountPage() {
         await supabase.from("profiles").insert({ id: user.id, email, subscription_plan: plan });
       }
 
-      setState({ status: "ready", email, plan });
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const lastSignInAt =
+        (user.last_sign_in_at as string | null) ??
+        (session?.user?.last_sign_in_at as string | null) ??
+        null;
+
+      let sessionSummary: string | null = null;
+      if (session) {
+        const expiresAt = session.expires_at
+          ? new Date(session.expires_at * 1000).toISOString()
+          : null;
+        sessionSummary = `Provider: ${session.token_type ?? "access"}, Expires at: ${
+          expiresAt ?? "unknown"
+        }`;
+      }
+
+      setState({ status: "ready", email, plan, lastSignInAt, sessionSummary });
     }
 
     loadProfile();
@@ -129,7 +155,12 @@ export default function AccountPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-primary text-white">
-      <div className="w-full max-w-xl rounded-xl bg-slate-900/70 p-8 shadow-xl border border-slate-800 space-y-6">
+      <motion.div
+        className="w-full max-w-xl rounded-xl bg-slate-900/70 p-8 shadow-xl border border-slate-800 space-y-6"
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+      >
         <header className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Account & Plan</h1>
@@ -161,6 +192,21 @@ export default function AccountPage() {
           <div className="text-sm font-medium text-white">{state.email ?? "Unknown"}</div>
         </section>
 
+        <section className="space-y-1 text-xs text-slate-300">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-slate-400">Last sign-in</span>
+            <span className="font-mono text-[11px] text-slate-200">
+              {state.lastSignInAt ?? "Unknown"}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-slate-400">Active session</span>
+            <span className="text-[11px] text-slate-200 text-right">
+              {state.sessionSummary ?? "No active session details"}
+            </span>
+          </div>
+        </section>
+
         <section className="space-y-3">
           <h2 className="text-sm font-semibold text-slate-200">Plan-based access</h2>
           <div className="grid gap-3 md:grid-cols-2 text-sm">
@@ -187,8 +233,8 @@ export default function AccountPage() {
               </h3>
               <ul className="space-y-1 text-slate-300">
                 <li>• Unlimited workflows</li>
-                <li>• Advanced analytics (Phase 5)</li>
-                <li>• Priority notifications (Phase 6)</li>
+                <li>• Advanced analytics (preview)</li>
+                <li>• Priority notifications (preview)</li>
               </ul>
             </div>
           </div>
@@ -200,7 +246,7 @@ export default function AccountPage() {
             {isPro ? (
               <p className="text-slate-200">
                 Pro features are <span className="font-semibold">unlocked</span> for this account.
-                In later phases, this gate will protect real workflow, analytics, and team features.
+                In a full production setup, this gate would protect real workflow, analytics, and team features.
               </p>
             ) : (
               <p className="text-slate-300">
@@ -212,7 +258,7 @@ export default function AccountPage() {
         </section>
 
         <div className="flex items-center justify-between pt-2 text-xs text-slate-400">
-          <span>Phase 2 · Mock subscription only</span>
+          <span>Mock subscription only</span>
           {isPro ? (
             <button
               type="button"
@@ -233,7 +279,7 @@ export default function AccountPage() {
             </button>
           )}
         </div>
-      </div>
+      </motion.div>
     </main>
   );
 }
