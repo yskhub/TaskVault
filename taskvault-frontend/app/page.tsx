@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-import { DisplayCardsDemo } from "@/components/ui/demo";
-
 const sections = [
   {
     href: "/auth",
@@ -84,29 +82,33 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }}
         >
-          {sections.map((item) => (
-            <Link
+          {sections.map((item, index) => (
+            <motion.div
               key={item.href}
-              href={item.href}
-              className="group rounded-xl border border-slate-800 bg-slate-900/70 p-5 shadow-sm transition hover:border-accent/70 hover:shadow-md hover:shadow-accent/20 min-h-[8.5rem]"
+              initial={{ opacity: 0, y: 8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.35, delay: 0.15 + index * 0.03, ease: "easeOut" }}
             >
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <p className="text-base font-semibold uppercase tracking-[0.18em] text-slate-200">
-                  {item.title}
+              <Link
+                href={item.href}
+                className="group rounded-xl border border-slate-800 bg-slate-900/70 p-5 shadow-sm transition-transform duration-200 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:border-accent/70 hover:shadow-md hover:shadow-accent/20 min-h-[8.5rem]"
+              >
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <p className="text-base font-semibold uppercase tracking-[0.18em] text-slate-200">
+                    {item.title}
+                  </p>
+                  <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-0.5 text-[11px] font-semibold text-slate-300">
+                    {item.badge}
+                  </span>
+                </div>
+                <p className="text-base text-slate-100 mb-4 leading-relaxed">{item.description}</p>
+                <p className="mt-auto text-sm sm:text-base font-semibold text-accent group-hover:text-blue-400">
+                  Open {item.title.toLowerCase()} →
                 </p>
-                <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-0.5 text-[11px] font-semibold text-slate-300">
-                  {item.badge}
-                </span>
-              </div>
-              <p className="text-base text-slate-100 mb-4 leading-relaxed">{item.description}</p>
-              <p className="mt-auto text-sm sm:text-base font-semibold text-accent group-hover:text-blue-400">
-                Open {item.title.toLowerCase()} →
-              </p>
-            </Link>
+              </Link>
+            </motion.div>
           ))}
         </motion.section>
-
-        <DisplayCardsDemo />
 
         <motion.section
           className="mt-4 grid gap-5 md:grid-cols-3 text-sm text-slate-300"
