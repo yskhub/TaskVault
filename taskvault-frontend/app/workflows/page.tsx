@@ -5,10 +5,12 @@ import { motion } from "framer-motion";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
+type StepStatus = "pending" | "in_progress" | "completed";
+
 type Step = {
   title: string;
   assigned_to: string;
-  status?: "pending" | "in_progress" | "completed";
+  status?: StepStatus;
 };
 
 type Workflow = {
@@ -48,11 +50,12 @@ export default function WorkflowsPage() {
     setSteps((prev) => [...prev, { title: "", assigned_to: "" }]);
   }
 
-  function updateWorkflowStepStatus(
+  async function updateWorkflowStepStatus(
     workflowId: number,
     stepIndex: number,
-    status: Step["status"]
+    status: StepStatus
   ) {
+    // Optimistically update UI
     setWorkflows((prev) =>
       prev.map((wf) =>
         wf.id === workflowId
@@ -65,6 +68,33 @@ export default function WorkflowsPage() {
           : wf
       )
     );
+
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/workflows/${workflowId}/steps/${stepIndex}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status }),
+        }
+      );
+
+      if (!res.ok) {
+        console.error("Failed to update step status", await res.text());
+        // Re-sync from server on error
+        await fetchWorkflows();
+        return;
+      }
+
+      const updated: Workflow = await res.json();
+      setWorkflows((prev) =>
+        prev.map((wf) => (wf.id === updated.id ? updated : wf))
+      );
+    } catch (err) {
+      console.error("Error updating step status", err);
+      // Best-effort re-sync
+      await fetchWorkflows();
+    }
   }
 
   async function handleCreate(e: React.FormEvent) {
@@ -96,7 +126,7 @@ export default function WorkflowsPage() {
 
   return (
     <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8">
-      <div className="mx-auto flex max-w-5xl flex-col gap-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <motion.header
           className="space-y-2"
           initial={{ opacity: 0, y: 16 }}
@@ -248,7 +278,7 @@ export default function WorkflowsPage() {
                           </span>
                           <div className="flex items-center gap-1.5">
                             {["pending", "in_progress", "completed"].map((s) => {
-                              const value = s as Step["status"];
+                              const value = s as "pending" | "in_progress" | "completed";
                               const active = (step.status ?? "pending") === value;
                               const label =
                                 value === "pending"

@@ -377,7 +377,7 @@ export default function DashboardPage() {
           <button
             type="button"
             onClick={() => setActiveDrill((prev) => (prev === "team" ? "none" : "team"))}
-            className={`rounded-xl border p-4 text-left shadow transition $${""}
+            className={`rounded-xl border p-4 text-left shadow transition
               ${
                 activeDrill === "team"
                   ? "border-accent bg-slate-900/90 shadow-accent/30"
@@ -424,7 +424,7 @@ export default function DashboardPage() {
           transition={{ duration: 0.4, ease: "easeOut", delay: 0.16 }}
         >
           <div
-            className={`rounded-xl border p-5 shadow flex flex-col gap-4 transition $${""}
+            className={`rounded-xl border p-5 shadow flex flex-col gap-4 transition
               ${
                 activeDrill === "steps"
                   ? "border-accent bg-slate-900/90 shadow-accent/30"
@@ -453,7 +453,7 @@ export default function DashboardPage() {
           </div>
 
           <div
-            className={`rounded-xl border p-5 shadow flex flex-col gap-4 transition $${""}
+            className={`rounded-xl border p-5 shadow flex flex-col gap-4 transition
               ${
                 activeDrill === "team"
                   ? "border-accent bg-slate-900/90 shadow-accent/30"

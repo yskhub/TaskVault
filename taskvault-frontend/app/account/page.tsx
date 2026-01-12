@@ -154,9 +154,9 @@ export default function AccountPage() {
   const isPro = state.plan === "pro";
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-primary text-white">
+    <main className="flex min-h-screen items-center justify-center bg-primary text-white px-4 py-10 sm:px-8">
       <motion.div
-        className="w-full max-w-xl rounded-xl bg-slate-900/70 p-8 shadow-xl border border-slate-800 space-y-6"
+        className="w-full max-w-3xl rounded-xl bg-slate-900/70 p-8 shadow-xl border border-slate-800 space-y-6"
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: "easeOut" }}

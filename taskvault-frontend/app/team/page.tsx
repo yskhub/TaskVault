@@ -192,7 +192,7 @@ export default function TeamPage() {
 
   return (
     <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8">
-      <div className="mx-auto flex max-w-5xl flex-col gap-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <motion.header
           className="space-y-2"
           initial={{ opacity: 0, y: 16 }}

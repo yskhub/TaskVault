@@ -38,8 +38,8 @@ const sections = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-primary text-white px-4 py-14 sm:px-10">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-16">
+    <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-16">
         <motion.header
           className="space-y-4"
           initial={{ opacity: 0, y: 16 }}
