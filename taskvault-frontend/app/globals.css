@@ -3,6 +3,19 @@
 @tailwind utilities;
 
 /* Global SaaS defaults */
-html, body {
+html,
+body {
   height: 100%;
+}
+
+/* Slightly larger base font-size so the whole app appears bigger
+   without needing browser zoom. Adjust if you prefer it smaller. */
+html {
+  font-size: 20px;
+}
+
+@media (min-width: 1440px) {
+  html {
+    font-size: 21px;
+  }
 }

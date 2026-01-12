@@ -376,8 +376,13 @@ def analytics_overview() -> AnalyticsOverview:
         completed_steps=completed_steps,
     )
 
-    # Team statistics (Supabase-backed via PostgREST)
-    members_list = list_team()
+    # Team statistics (Supabase-backed via PostgREST).
+    # If Supabase/team storage is not yet fully configured, degrade gracefully
+    # by treating team metrics as zero instead of failing the entire endpoint.
+    try:
+        members_list = list_team()
+    except HTTPException:
+        members_list = []
     total_members = len(members_list)
     admins = sum(1 for m in members_list if m.role == "admin")
     members = sum(1 for m in members_list if m.role == "member")

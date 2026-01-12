@@ -17,12 +17,10 @@ export default function AuthPage() {
     setMessage(null);
 
     try {
-      const fn =
+      const { error } =
         mode === "signin"
-          ? supabase.auth.signInWithPassword
-          : supabase.auth.signUp;
-
-      const { error } = await fn({ email, password });
+          ? await supabase.auth.signInWithPassword({ email, password })
+          : await supabase.auth.signUp({ email, password });
 
       if (error) {
         setMessage(error.message);
