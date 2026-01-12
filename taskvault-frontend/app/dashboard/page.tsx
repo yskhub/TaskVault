@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -10,7 +11,16 @@ import {
   LinearScale,
   BarElement,
 } from "chart.js";
-import { Doughnut, Bar } from "react-chartjs-2";
+// Load chart components only on the client to avoid any SSR/hydration
+// issues in production (e.g. on Vercel).
+const Doughnut = dynamic(
+  () => import("react-chartjs-2").then((m) => m.Doughnut),
+  { ssr: false }
+);
+const Bar = dynamic(
+  () => import("react-chartjs-2").then((m) => m.Bar),
+  { ssr: false }
+);
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
