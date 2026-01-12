@@ -13,7 +13,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
 
-from supabase_client import check_supabase_connection
+try:
+    # When imported as a package module (e.g. `backend.main`).
+    from .supabase_client import check_supabase_connection  # type: ignore[import]
+except ImportError:
+    # Fallback for running `main.py` directly or via `uvicorn main:app` from the backend folder.
+    from supabase_client import check_supabase_connection
 
 
 app = FastAPI()
