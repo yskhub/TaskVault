@@ -47,10 +47,13 @@ type AnalyticsOverview = {
   team: TeamStats;
 };
 
+type BackendStatus = "checking" | "ok" | "degraded" | "error";
+
 export default function DashboardPage() {
   const [data, setData] = useState<AnalyticsOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [backendStatus, setBackendStatus] = useState<BackendStatus>("checking");
 
   async function loadAnalytics() {
     try {
@@ -69,8 +72,27 @@ export default function DashboardPage() {
     }
   }
 
+  async function checkBackendHealth() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/health`);
+      if (!res.ok) {
+        setBackendStatus("error");
+        return;
+      }
+      const json = await res.json();
+      if (json?.supabase?.ok === true) {
+        setBackendStatus("ok");
+      } else {
+        setBackendStatus("degraded");
+      }
+    } catch {
+      setBackendStatus("error");
+    }
+  }
+
   useEffect(() => {
     loadAnalytics();
+    checkBackendHealth();
   }, []);
 
   if (loading) {
@@ -148,7 +170,43 @@ export default function DashboardPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
             Phase 5 · Dashboard & analytics
           </p>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+          <div className="flex items-center justify-between gap-3">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+            <span
+              className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-medium
+                ${
+                  backendStatus === "ok"
+                    ? "border-emerald-500/60 bg-emerald-500/10 text-emerald-300"
+                    : backendStatus === "degraded"
+                    ? "border-amber-400/60 bg-amber-400/10 text-amber-200"
+                    : backendStatus === "error"
+                    ? "border-rose-500/60 bg-rose-500/10 text-rose-200"
+                    : "border-slate-600/60 bg-slate-800/70 text-slate-300"
+                }`}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full
+                  ${
+                    backendStatus === "ok"
+                      ? "bg-emerald-400"
+                      : backendStatus === "degraded"
+                      ? "bg-amber-300"
+                      : backendStatus === "error"
+                      ? "bg-rose-400"
+                      : "bg-slate-400"
+                  }`}
+              />
+              <span>
+                {backendStatus === "ok"
+                  ? "Backend: Online"
+                  : backendStatus === "degraded"
+                  ? "Backend: Degraded"
+                  : backendStatus === "error"
+                  ? "Backend: Offline"
+                  : "Backend: Checking..."}
+              </span>
+            </span>
+          </div>
           <p className="text-sm text-slate-300 max-w-2xl">
             See a quick overview of how TaskVault is being used: workflows in motion and your
             current team footprint.
