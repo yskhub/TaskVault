@@ -74,13 +74,13 @@ export default function Home() {
             <div className="flex gap-2 sm:gap-3 mt-3 sm:mt-0">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center justify-center rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-blue-500"
+                className="inline-flex items-center justify-center rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-blue-500 whitespace-nowrap"
               >
                 Go to dashboard
               </Link>
               <Link
                 href="/auth"
-                className="inline-flex items-center justify-center rounded-md border border-slate-700 bg-slate-900/80 px-5 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-800"
+                className="inline-flex items-center justify-center rounded-md border border-slate-700 bg-slate-900/80 px-5 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-800 whitespace-nowrap"
               >
                 Sign in / Sign up
               </Link>
@@ -89,7 +89,7 @@ export default function Home() {
         </motion.header>
 
         <motion.section
-          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }}
