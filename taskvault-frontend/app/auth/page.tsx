@@ -75,7 +75,7 @@ export default function AuthPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white px-4 py-10 sm:px-8">
+		<main className="min-h-screen text-white px-4 py-10 sm:px-8">
       <div className="mx-auto flex min-h-[70vh] max-w-6xl items-center">
         <div className="grid w-full items-center gap-10 lg:grid-cols-[1.2fr,1fr]">
           {/* Left: brand + hero copy */}
