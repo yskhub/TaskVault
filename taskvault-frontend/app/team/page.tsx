@@ -161,8 +161,19 @@ export default function TeamPage() {
 
   if (state.status === "loading") {
     return (
-      <main className="flex min-h-screen items-center justify-center text-white">
-        <p className="text-sm text-slate-200">Loading team...</p>
+      <main className="min-h-screen text-white px-4 py-10 sm:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col gap-8 animate-pulse">
+          <div className="space-y-3">
+            <div className="h-3 w-40 rounded-full bg-slate-800/80" />
+            <div className="h-7 w-56 rounded-lg bg-slate-800/80" />
+            <div className="h-3 w-full max-w-xl rounded-lg bg-slate-800/70" />
+          </div>
+          <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-6 space-y-4">
+            <div className="h-4 w-40 rounded-md bg-slate-800" />
+            <div className="h-3 w-64 rounded-md bg-slate-900" />
+            <div className="h-10 w-full rounded-md bg-slate-950/80" />
+          </div>
+        </div>
       </main>
     );
   }
@@ -276,13 +287,12 @@ export default function TeamPage() {
 
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || !email.trim() || remaining <= 0}
               className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/40 hover:bg-blue-500 disabled:opacity-60 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 disabled:hover:translate-y-0"
             >
-              {submitting ? "Adding..." : "Add member"}
+              {submitting ? "Adding member..." : "Add member"}
             </button>
           </form>
-        </motion.section>
 
         <section className="space-y-3">
           <h2 className="text-lg font-semibold">Current team</h2>
@@ -357,6 +367,7 @@ export default function TeamPage() {
             </div>
           )}
         </section>
+        </motion.section>
       </div>
     </main>
   );

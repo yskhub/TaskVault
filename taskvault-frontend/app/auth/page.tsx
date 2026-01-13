@@ -11,11 +11,33 @@ export default function AuthPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
+
+    const nextEmailError = !email.trim()
+      ? "Email is required."
+      : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      ? "Enter a valid email address."
+      : null;
+    const nextPasswordError = !password.trim()
+      ? "Password is required."
+      : password.length < 6
+      ? "Use at least 6 characters."
+      : null;
+
+    setEmailError(nextEmailError);
+    setPasswordError(nextPasswordError);
+
+    if (nextEmailError || nextPasswordError) {
+      setLoading(false);
+      return;
+    }
 
     try {
       const { error } =
@@ -71,6 +93,28 @@ export default function AuthPage() {
       setMessage(msg || fallback);
     } finally {
       setResetting(false);
+    }
+  }
+
+  function handleEmailBlur() {
+    if (!emailError && !email.trim()) return;
+    if (!email.trim()) {
+      setEmailError("Email is required.");
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError("Enter a valid email address.");
+    } else {
+      setEmailError(null);
+    }
+  }
+
+  function handlePasswordBlur() {
+    if (!passwordError && !password.trim()) return;
+    if (!password.trim()) {
+      setPasswordError("Password is required.");
+    } else if (password.length < 6) {
+      setPasswordError("Use at least 6 characters.");
+    } else {
+      setPasswordError(null);
     }
   }
 
@@ -179,19 +223,45 @@ export default function AuthPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2.5 text-base text-white outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+						onBlur={handleEmailBlur}
+						className={`w-full rounded-md border bg-slate-950 px-3 py-2.5 text-base text-white outline-none focus:ring-1 focus:ring-accent ${
+							emailError
+								? "border-red-500 focus:border-red-500 focus:ring-red-500"
+								: "border-slate-700 focus:border-accent"
+						}`}
                 />
+                {emailError && (
+						<p className="pt-1 text-xs text-red-400">{emailError}</p>
+					)}
               </div>
 
-                  <div className="space-y-1 text-sm sm:text-base">
+						  <div className="space-y-1 text-sm sm:text-base">
                 <label className="block text-slate-200">Password</label>
-                <input
-                  type="password"
+                <div className="relative">
+                  <input
+						  type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2.5 text-base text-white outline-none focus:border-accent focus:ring-1 focus:ring-accent"
-                />
+                  onBlur={handlePasswordBlur}
+						  className={`w-full rounded-md border bg-slate-950 px-3 py-2.5 pr-10 text-base text-white outline-none focus:ring-1 ${
+							passwordError
+								? "border-red-500 focus:border-red-500 focus:ring-red-500"
+								: "border-slate-700 focus:border-accent focus:ring-accent"
+						  }`}
+						/>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute inset-y-0 right-2 flex items-center text-xs text-slate-400 hover:text-slate-200"
+                    disabled={loading}
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+                {passwordError && (
+						<p className="pt-1 text-xs text-red-400">{passwordError}</p>
+					)}
               </div>
 
               <div className="flex items-center justify-between text-xs sm:text-sm text-slate-400">
@@ -215,9 +285,12 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-3 w-full rounded-md bg-accent px-4 py-2.5 text-base font-semibold text-white shadow-lg shadow-blue-500/40 transition hover:-translate-y-0.5 hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
+						className="mt-3 w-full rounded-md bg-accent px-4 py-2.5 text-base font-semibold text-white shadow-lg shadow-blue-500/40 transition hover:-translate-y-0.5 hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60 flex items-center justify-center gap-2"
               >
-                {loading ? "Please wait..." : mode === "signin" ? "Sign in" : "Sign up"}
+                {loading && (
+                  <span className="h-3 w-3 rounded-full border border-transparent border-t-white border-l-white animate-spin" />
+                )}
+						{loading ? "Please wait..." : mode === "signin" ? "Sign in" : "Sign up"}
               </button>
             </form>
 

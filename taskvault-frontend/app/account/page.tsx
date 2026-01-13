@@ -126,8 +126,15 @@ export default function AccountPage() {
 
   if (state.status === "loading") {
     return (
-      <main className="flex min-h-screen items-center justify-center text-white">
-        <p className="text-sm text-slate-200">Loading account...</p>
+      <main className="min-h-screen text-white px-4 py-10 sm:px-8">
+        <div className="mx-auto flex max-w-3xl flex-col gap-6 animate-pulse">
+          <div className="h-4 w-32 rounded-full bg-slate-800/80" />
+          <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-6 space-y-4">
+            <div className="h-5 w-40 rounded-md bg-slate-800" />
+            <div className="h-3 w-56 rounded-md bg-slate-900" />
+            <div className="h-3 w-24 rounded-md bg-slate-800" />
+          </div>
+        </div>
       </main>
     );
   }
@@ -257,7 +264,34 @@ export default function AccountPage() {
           </div>
         </section>
 
-        <div className="flex items-center justify-between pt-2 text-xs text-slate-400">
+        <section className="flex flex-col gap-3 pt-2 text-sm sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex gap-2">
+            {isPro ? (
+              <button
+                type="button"
+                onClick={mockDowngradeToFree}
+                disabled={updating}
+                className="inline-flex items-center justify-center rounded-md border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-100 hover:bg-slate-800 disabled:opacity-60"
+              >
+                {updating ? "Updating plan..." : "Mock downgrade to Free"}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={mockUpgradeToPro}
+                disabled={updating}
+                className="inline-flex items-center justify-center rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white shadow-sm shadow-blue-500/40 hover:bg-blue-500 disabled:opacity-60"
+              >
+                {updating ? "Updating plan..." : "Mock upgrade to Pro"}
+              </button>
+            )}
+          </div>
+          <p className="text-xs text-slate-400">
+            Changes here only update the mock profile table — ideal for demos without real billing.
+          </p>
+        </section>
+
+        <div className="flex items-center justify-between pt-3 text-xs text-slate-400">
           <span>Mock subscription only</span>
           {isPro ? (
             <button

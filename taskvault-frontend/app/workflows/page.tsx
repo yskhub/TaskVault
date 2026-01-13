@@ -160,6 +160,7 @@ export default function WorkflowsPage() {
                 className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                 placeholder="e.g. New hire onboarding"
               />
+              <p className="pt-1 text-xs text-slate-400">Press Enter to create when focused on this field.</p>
             </div>
 
             <div className="space-y-2 text-sm">
@@ -211,7 +212,7 @@ export default function WorkflowsPage() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !title.trim()}
               className="mt-2 inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/40 hover:bg-blue-500 disabled:opacity-60 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 disabled:hover:translate-y-0"
             >
               {loading ? "Creating..." : "Create workflow"}

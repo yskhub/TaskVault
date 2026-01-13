@@ -64,25 +64,26 @@ export default function Home() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight lg:whitespace-nowrap">
-                Your subscription-friendly workflow hub
+                Organize teams. Track workflows.
+                <span className="block text-accent">See what matters, fast.</span>
               </h1>
               <p className="mt-5 max-w-3xl text-lg text-slate-200">
-                TaskVault brings together authentication, plans, workflows, team
-                management, and analytics into a single, minimal SaaS console.
+                TaskVault brings together authentication, plans, workflows, team management,
+                and analytics into a single, subscription-friendly console.
               </p>
             </div>
             <div className="flex gap-2 sm:gap-3 mt-3 sm:mt-0">
               <Link
-                href="/dashboard"
-                className="inline-flex items-center justify-center rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-blue-500 whitespace-nowrap"
-              >
-                Go to dashboard
-              </Link>
-              <Link
                 href="/auth"
-                className="inline-flex items-center justify-center rounded-md border border-slate-700 bg-slate-900/80 px-5 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-800 whitespace-nowrap"
+                className="inline-flex items-center justify-center rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/40 hover:bg-blue-500 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-500/50 whitespace-nowrap transition-transform duration-150"
               >
                 Sign in / Sign up
+              </Link>
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center justify-center rounded-md border border-slate-700 bg-slate-900/80 px-5 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-800 hover:-translate-y-0.5 whitespace-nowrap transition-transform duration-150"
+              >
+                Go to dashboard
               </Link>
             </div>
           </div>
