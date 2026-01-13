@@ -118,7 +118,7 @@ export default function Home() {
                           {item.title}
                         </p>
                       </div>
-                      <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-0.5 text-[11px] font-semibold text-slate-300">
+                      <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-0.5 text-xs font-semibold text-slate-200">
                         {item.badge}
                       </span>
                     </div>

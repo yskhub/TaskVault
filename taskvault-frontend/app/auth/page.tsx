@@ -185,7 +185,7 @@ export default function AuthPage() {
                   and password.
                 </p>
               </div>
-              <span className="rounded-full border border-slate-700 bg-slate-900/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-300">
+              <span className="rounded-full border border-slate-700 bg-slate-900/60 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200">
                 Email & password auth
               </span>
             </div>

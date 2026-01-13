@@ -378,7 +378,7 @@ export default function DashboardPage() {
           transition={{ duration: 0.4, ease: "easeOut", delay: 0.05 }}
         >
           <div
-            className={`mt-1 inline-flex w-full max-w-xs items-start gap-2 rounded-xl border bg-slate-950/70 px-3 py-1.5 text-[10px] sm:text-[11px] font-medium
+            className={`mt-1 inline-flex w-full max-w-xs items-start gap-2 rounded-xl border bg-slate-950/70 px-3 py-1.5 text-xs sm:text-[13px] font-medium
               ${
                 backendStatus === "ok"
                   ? "border-emerald-500/50"
@@ -411,7 +411,7 @@ export default function DashboardPage() {
                   ? "System status · Unreachable"
                   : "System status · Checking"}
               </span>
-              <span className="text-[9px] sm:text-[10px] font-normal text-slate-400/90">
+              <span className="text-[11px] sm:text-xs font-normal text-slate-300/90">
                 {backendStatus === "checking"
                   ? "Verifying API and Supabase health"
                   : `API ${
@@ -457,7 +457,7 @@ export default function DashboardPage() {
               {workflow.with_steps} with steps · {workflow.without_steps} without steps
             </p>
             {activeDrill === "workflows" && (
-              <ul className="mt-3 space-y-1 text-[11px] text-slate-300">
+              <ul className="mt-3 space-y-1 text-xs text-slate-200">
                 <li>
                   • Average steps per workflow: {workflow.total === 0
                     ? 0
@@ -484,7 +484,7 @@ export default function DashboardPage() {
               {workflow.completed_steps} completed
             </p>
             {activeDrill === "steps" && (
-              <ul className="mt-3 space-y-1 text-[11px] text-slate-300">
+              <ul className="mt-3 space-y-1 text-xs text-slate-200">
                 <li>• Completion rate: {completionRate}% of all steps.</li>
                 <li>• Pending + in-progress indicate current operational load.</li>
               </ul>
@@ -507,7 +507,7 @@ export default function DashboardPage() {
               {team.admins} admins · {team.members} members
             </p>
             {activeDrill === "team" && (
-              <ul className="mt-3 space-y-1 text-[11px] text-slate-300">
+              <ul className="mt-3 space-y-1 text-xs text-slate-200">
                 <li>• Admins handle approvals and configuration.</li>
                 <li>• Members focus on executing workflow steps.</li>
               </ul>
@@ -527,7 +527,7 @@ export default function DashboardPage() {
                 setLoading(true);
                 loadAnalytics();
               }}
-              className="mt-3 inline-flex items-center justify-center rounded-md border border-slate-700 bg-slate-900 px-3 py-1.5 text-[11px] font-semibold text-slate-100 hover:bg-slate-800"
+              className="mt-3 inline-flex items-center justify-center rounded-md border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-100 hover:bg-slate-800"
             >
               Refresh analytics
             </button>

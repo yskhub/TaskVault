@@ -192,7 +192,7 @@ export default function WorkflowsPage() {
                     className="grid gap-2 rounded-md border border-slate-800 bg-slate-950/60 p-3 sm:grid-cols-2"
                   >
                     <div className="space-y-1">
-                      <label className="block text-[11px] uppercase tracking-wide text-slate-400">
+                      <label className="block text-xs uppercase tracking-wide text-slate-300">
                         Step title
                       </label>
                       <input
@@ -513,7 +513,7 @@ export default function WorkflowsPage() {
                     className="grid gap-2 rounded-md border border-slate-800 bg-slate-950/60 p-3 sm:grid-cols-2"
                   >
                     <div className="space-y-1">
-                      <label className="block text-[11px] uppercase tracking-wide text-slate-400">
+                      <label className="block text-xs uppercase tracking-wide text-slate-300">
                         Step title
                       </label>
                       <input
@@ -525,7 +525,7 @@ export default function WorkflowsPage() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="block text-[11px] uppercase tracking-wide text-slate-400">
+                      <label className="block text-xs uppercase tracking-wide text-slate-300">
                         Assigned to
                       </label>
                       <input
@@ -600,7 +600,7 @@ export default function WorkflowsPage() {
                     stepCount={wf.steps.length}
                   >
                     {wf.steps.length > 0 && (
-                      <div className="text-[11px] text-slate-400">
+                      <div className="text-xs text-slate-300">
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
                             <span>Progress</span>
@@ -660,7 +660,7 @@ export default function WorkflowsPage() {
                                         value,
                                       )
                                     }
-                                    className={`inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-[10px] font-medium transition ${
+                                    className={`inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs font-medium transition ${
                                       active
                                         ? value === "completed"
                                           ? "border-emerald-400 bg-emerald-500/20 text-emerald-100"

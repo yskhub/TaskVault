@@ -203,13 +203,13 @@ export default function AccountPage() {
         <section className="space-y-1 text-xs text-slate-300">
           <div className="flex items-center justify-between gap-4">
             <span className="text-slate-400">Last sign-in</span>
-            <span className="font-mono text-[11px] text-slate-200">
+            <span className="font-mono text-xs text-slate-200">
               {state.lastSignInAt ?? "Unknown"}
             </span>
           </div>
           <div className="flex items-center justify-between gap-4">
             <span className="text-slate-400">Active session</span>
-            <span className="text-[11px] text-slate-200 text-right">
+            <span className="text-xs text-slate-200 text-right">
               {state.sessionSummary ?? "No active session details"}
             </span>
           </div>
@@ -235,7 +235,7 @@ export default function AccountPage() {
             >
               <h3 className="mb-1 font-semibold flex items-center gap-2">
                 Pro
-                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold text-amber-200">
+                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-semibold text-amber-200">
                   Mock
                 </span>
               </h3>
