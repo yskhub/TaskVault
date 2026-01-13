@@ -23,9 +23,9 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 	useEffect(() => {
 		if (!containerRef.current) return;
 
-		const SEPARATION = 150;
-		const AMOUNTX = 40;
-		const AMOUNTY = 60;
+		const SEPARATION = 120;
+		const AMOUNTX = 50;
+		const AMOUNTY = 70;
 
 		// Scene setup
 		const scene = new THREE.Scene();
@@ -65,9 +65,9 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 
 				positions.push(x, y, z);
 				if (theme === 'dark') {
-					colors.push(200, 200, 200);
+					colors.push(1, 1, 1);
 				} else {
-					colors.push(0, 0, 0);
+					colors.push(0.15, 0.15, 0.18);
 				}
 			}
 		}
@@ -80,7 +80,7 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 
 		// Create material
 		const material = new THREE.PointsMaterial({
-			size: 8,
+			size: 10,
 			vertexColors: true,
 			transparent: true,
 			opacity: 0.8,
@@ -185,7 +185,10 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 	return (
 		<div
 			ref={containerRef}
-			className={cn('pointer-events-none fixed inset-0 -z-10', className)}
+			className={cn(
+				'pointer-events-none fixed inset-0 -z-10 bg-[#020617]',
+				className,
+			)}
 			{...props}
 		/>
 	);
