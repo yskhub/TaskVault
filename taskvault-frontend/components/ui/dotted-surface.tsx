@@ -23,9 +23,9 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 	useEffect(() => {
 		if (!containerRef.current) return;
 
-		const SEPARATION = 120;
-		const AMOUNTX = 50;
-		const AMOUNTY = 70;
+		const SEPARATION = 110;
+		const AMOUNTX = 60;
+		const AMOUNTY = 80;
 
 		// Scene setup
 		const scene = new THREE.Scene();
@@ -80,10 +80,10 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 
 		// Create material
 		const material = new THREE.PointsMaterial({
-			size: 10,
+			size: 11,
 			vertexColors: true,
 			transparent: true,
-			opacity: 0.8,
+			opacity: 0.9,
 			sizeAttenuation: true,
 		});
 
@@ -108,8 +108,8 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 
 					// Animate Y position with sine waves
 					positions[index + 1] =
-						Math.sin((ix + count) * 0.3) * 50 +
-						Math.sin((iy + count) * 0.5) * 50;
+						Math.sin((ix + count) * 0.32) * 55 +
+						Math.sin((iy + count) * 0.52) * 55;
 
 					i++;
 				}
@@ -127,7 +127,7 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 			}
 
 			renderer.render(scene, camera);
-			count += 0.1;
+			count += 0.11;
 		};
 
 		// Handle window resize
