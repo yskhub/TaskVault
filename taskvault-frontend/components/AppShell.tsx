@@ -9,7 +9,7 @@ import { DottedSurface } from "@/components/ui/dotted-surface";
 import { ToastProvider } from "@/components/ui/Toast";
 import { CommandPalette, type CommandAction } from "@/components/command/CommandPalette";
 import { useKeyboard } from "@/hooks/useKeyboard";
-import ProceduralGroundBackground from "../../components/ui/procedural-ground-background";
+import ProceduralGroundBackground from "@/components/ui/procedural-ground-background";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
