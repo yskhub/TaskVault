@@ -328,27 +328,86 @@ export default function DashboardPage() {
             }}
           />
         )}
-        <motion.header
-          className="space-y-2"
-          initial={{ opacity: 0, y: 16 }}
+        <motion.section
+          className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: "easeOut" }}
+          transition={{ duration: 0.4, ease: "easeOut", delay: 0.06 }}
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-            Dashboard & analytics
-          </p>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-slate-300 max-w-2xl">
-            See a quick overview of how TaskVault is being used: workflows in motion and your
-            current team footprint.
-          </p>
-        </motion.header>
+          <header className="space-y-2 max-w-xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Dashboard & analytics
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-sm text-slate-300 max-w-2xl">
+              See a quick overview of how TaskVault is being used: workflows in motion and your
+              current team footprint.
+            </p>
+          </header>
 
+          <div className="flex justify-start sm:justify-end md:justify-end">
+            <div
+              className={`mt-1 inline-flex w-full max-w-xs items-start gap-2 rounded-xl border bg-slate-950/70 px-3 py-1.5 text-xs sm:text-[13px] font-medium
+              ${
+                backendStatus === "ok"
+                  ? "border-emerald-500/50"
+                  : backendStatus === "degraded"
+                  ? "border-amber-400/60"
+                  : backendStatus === "error"
+                  ? "border-rose-500/70"
+                  : "border-slate-700/70"
+              }`}
+            >
+              <span
+                className={`mt-[3px] h-1.5 w-1.5 flex-shrink-0 rounded-full
+                ${
+                  backendStatus === "ok"
+                    ? "bg-emerald-400"
+                    : backendStatus === "degraded"
+                    ? "bg-amber-300"
+                    : backendStatus === "error"
+                    ? "bg-rose-400"
+                    : "bg-slate-400"
+                }`}
+              />
+              <div className="flex flex-col leading-tight text-slate-100">
+                <span className="font-semibold tracking-tight">
+                  {backendStatus === "ok"
+                    ? "System status · Healthy"
+                    : backendStatus === "degraded"
+                    ? "System status · Degraded"
+                    : backendStatus === "error"
+                    ? "System status · Unreachable"
+                    : "System status · Checking"}
+                </span>
+                <span className="text-[11px] sm:text-xs font-normal text-slate-300/90">
+                  {backendStatus === "checking"
+                    ? "Verifying API and Supabase health"
+                    : `API ${
+                        healthInfo?.backendLatencyMs != null
+                          ? `${healthInfo.backendLatencyMs} ms`
+                          : "latency: n/a"
+                      } · Supabase ${
+                        healthInfo?.supabaseOk === true
+                          ? "OK"
+                          : healthInfo?.supabaseOk === false
+                          ? "issue"
+                          : "n/a"
+                      }${
+                        healthInfo?.supabaseLatencyMs != null
+                          ? ` · ${healthInfo.supabaseLatencyMs} ms`
+                          : ""
+                      }`}
+                </span>
+              </div>
+            </div>
+          </div>
+        </motion.section>
         <motion.section
           className="grid gap-4 md:grid-cols-3"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: "easeOut", delay: 0.06 }}
+          transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
         >
           <MetricCard
             label="Total workflows"
@@ -369,69 +428,6 @@ export default function DashboardPage() {
             value={team.total_members}
             helper={`${team.admins} admins · ${team.members} members`}
           />
-        </motion.section>
-
-        <motion.section
-          className="flex justify-start sm:justify-end"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: "easeOut", delay: 0.05 }}
-        >
-          <div
-            className={`mt-1 inline-flex w-full max-w-xs items-start gap-2 rounded-xl border bg-slate-950/70 px-3 py-1.5 text-xs sm:text-[13px] font-medium
-              ${
-                backendStatus === "ok"
-                  ? "border-emerald-500/50"
-                  : backendStatus === "degraded"
-                  ? "border-amber-400/60"
-                  : backendStatus === "error"
-                  ? "border-rose-500/70"
-                  : "border-slate-700/70"
-              }`}
-          >
-            <span
-              className={`mt-[3px] h-1.5 w-1.5 flex-shrink-0 rounded-full
-                ${
-                  backendStatus === "ok"
-                    ? "bg-emerald-400"
-                    : backendStatus === "degraded"
-                    ? "bg-amber-300"
-                    : backendStatus === "error"
-                    ? "bg-rose-400"
-                    : "bg-slate-400"
-                }`}
-            />
-            <div className="flex flex-col leading-tight text-slate-100">
-              <span className="font-semibold tracking-tight">
-                {backendStatus === "ok"
-                  ? "System status · Healthy"
-                  : backendStatus === "degraded"
-                  ? "System status · Degraded"
-                  : backendStatus === "error"
-                  ? "System status · Unreachable"
-                  : "System status · Checking"}
-              </span>
-              <span className="text-[11px] sm:text-xs font-normal text-slate-300/90">
-                {backendStatus === "checking"
-                  ? "Verifying API and Supabase health"
-                  : `API ${
-                      healthInfo?.backendLatencyMs != null
-                        ? `${healthInfo.backendLatencyMs} ms`
-                        : "latency: n/a"
-                    } · Supabase ${
-                      healthInfo?.supabaseOk === true
-                        ? "OK"
-                        : healthInfo?.supabaseOk === false
-                        ? "issue"
-                        : "n/a"
-                    }${
-                      healthInfo?.supabaseLatencyMs != null
-                        ? ` · ${healthInfo.supabaseLatencyMs} ms`
-                        : ""
-                    }`}
-              </span>
-            </div>
-          </div>
         </motion.section>
 
         <motion.section
