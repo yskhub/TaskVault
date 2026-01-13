@@ -50,8 +50,8 @@ const sections = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-16">
+    <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8 lg:px-10">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-16">
         <motion.header
           className="space-y-4"
           initial={{ opacity: 0, y: 16 }}
@@ -89,7 +89,7 @@ export default function Home() {
         </motion.header>
 
         <motion.section
-          className="grid gap-6 md:grid-cols-2 xl:grid-cols-3"
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }}
