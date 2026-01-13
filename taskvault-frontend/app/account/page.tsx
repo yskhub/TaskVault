@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabaseClient";
 import { motion } from "framer-motion";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 type Plan = "free" | "pro";
 
@@ -127,12 +128,12 @@ export default function AccountPage() {
   if (state.status === "loading") {
     return (
       <main className="min-h-screen text-white px-4 py-10 sm:px-8">
-        <div className="mx-auto flex max-w-3xl flex-col gap-6 animate-pulse">
-          <div className="h-4 w-32 rounded-full bg-slate-800/80" />
+        <div className="mx-auto flex max-w-3xl flex-col gap-6">
+          <Skeleton className="h-4 w-32" />
           <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-6 space-y-4">
-            <div className="h-5 w-40 rounded-md bg-slate-800" />
-            <div className="h-3 w-56 rounded-md bg-slate-900" />
-            <div className="h-3 w-24 rounded-md bg-slate-800" />
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-3 w-56" />
+            <Skeleton className="h-3 w-24" />
           </div>
         </div>
       </main>

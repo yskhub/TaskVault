@@ -39,15 +39,15 @@ const ProceduralGroundBackground: React.FC = () => {
       void main() {
         vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
         float depth = 1.0 / (uv.y + 1.15);
-        vec2 gridUv = vec2(uv.x * depth, depth + u_time * 0.15);
+        vec2 gridUv = vec2(uv.x * depth, depth + u_time * 0.08);
         float n = noise(gridUv * 3.5);
-        float ripples = sin(gridUv.y * 18.0 + n * 8.0 + u_time * 0.5);
+        float ripples = sin(gridUv.y * 18.0 + n * 8.0 + u_time * 0.25);
         float topoLine = smoothstep(0.03, 0.0, abs(ripples));
         vec3 baseColor = vec3(0.04, 0.03, 0.12);
         vec3 accentColor = vec3(0.1, 0.3, 0.8);
         vec3 neonColor = vec3(0.6, 0.2, 1.0);
-        vec3 finalColor = mix(baseColor, accentColor, n * 0.6);
-        finalColor += topoLine * neonColor * depth * 0.4;
+        vec3 finalColor = mix(baseColor, accentColor, n * 0.4);
+        finalColor += topoLine * neonColor * depth * 0.25;
         float fade = smoothstep(0.1, -1.0, uv.y);
         finalColor *= (1.0 - length(uv) * 0.45) * (1.0 - fade);
         gl_FragColor = vec4(finalColor, 1.0);
@@ -105,7 +105,7 @@ const ProceduralGroundBackground: React.FC = () => {
         gl.viewport(0, 0, width, height);
       }
 
-      gl.uniform1f(timeLoc, time * 0.001);
+      gl.uniform1f(timeLoc, time * 0.0007);
       gl.uniform2f(resLoc, canvas.width, canvas.height);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
 
@@ -124,7 +124,7 @@ const ProceduralGroundBackground: React.FC = () => {
       <canvas
         ref={canvasRef}
         className="w-full h-full block touch-none"
-        style={{ filter: "contrast(1.1) brightness(0.9)" }}
+        style={{ filter: "contrast(1.0) brightness(0.8)" }}
       />
     </div>
   );

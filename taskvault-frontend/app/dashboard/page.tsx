@@ -25,6 +25,14 @@ const Bar = dynamic(
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
+import { MetricCard } from "@/components/dashboard/MetricCard";
+import { supabase } from "../../lib/supabaseClient";
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
+import {
+  GuidedTour,
+  type TourStep,
+} from "@/components/onboarding/GuidedTour";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
 type WorkflowStats = {
@@ -65,6 +73,19 @@ export default function DashboardPage() {
   const [backendStatus, setBackendStatus] = useState<BackendStatus>("checking");
   const [healthInfo, setHealthInfo] = useState<HealthInfo | null>(null);
   const [activeDrill, setActiveDrill] = useState<ActiveDrill>("none");
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [tourStepIndex, setTourStepIndex] = useState<number | null>(null);
+
+  const tourSteps: TourStep[] = [
+    {
+      title: "Your usage at a glance",
+      body: "This dashboard gives you a read on workflows, steps, and team footprint. It updates as you use TaskVault.",
+    },
+    {
+      title: "Drill into what matters",
+      body: "Use the cards and charts below to focus on workflows, step status, or team composition as you explore.",
+    },
+  ];
 
   async function loadAnalytics() {
     try {
@@ -118,6 +139,37 @@ export default function DashboardPage() {
   useEffect(() => {
     loadAnalytics();
     checkBackendHealth();
+  }, []);
+
+  useEffect(() => {
+    async function initOnboarding() {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) return;
+
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("has_seen_tour")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Error loading onboarding flag", error);
+          return;
+        }
+
+        if (!data?.has_seen_tour) {
+          setShowOnboarding(true);
+        }
+      } catch (err) {
+        console.error("Error initializing onboarding", err);
+      }
+    }
+
+    void initOnboarding();
   }, []);
 
   if (loading) {
@@ -238,6 +290,44 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen text-white px-4 py-10 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
+        {showOnboarding && (
+          <OnboardingModal
+            onClose={() => {
+              setShowOnboarding(false);
+              setTourStepIndex(0);
+            }}
+          />
+        )}
+
+        {tourStepIndex !== null && tourStepIndex >= 0 && tourStepIndex < tourSteps.length && (
+          <GuidedTour
+            step={tourSteps[tourStepIndex]}
+            onNext={async () => {
+              const next = tourStepIndex + 1;
+              if (next < tourSteps.length) {
+                setTourStepIndex(next);
+                return;
+              }
+
+              setTourStepIndex(null);
+
+              try {
+                const {
+                  data: { user },
+                } = await supabase.auth.getUser();
+
+                if (!user) return;
+
+                await supabase
+                  .from("profiles")
+                  .update({ has_seen_tour: true })
+                  .eq("id", user.id);
+              } catch (err) {
+                console.error("Failed to mark onboarding tour as seen", err);
+              }
+            }}
+          />
+        )}
         <motion.header
           className="space-y-2"
           initial={{ opacity: 0, y: 16 }}
@@ -253,6 +343,33 @@ export default function DashboardPage() {
             current team footprint.
           </p>
         </motion.header>
+
+        <motion.section
+          className="grid gap-4 md:grid-cols-3"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut", delay: 0.06 }}
+        >
+          <MetricCard
+            label="Total workflows"
+            value={workflow.total}
+            helper={
+              workflow.total === 0
+                ? "Create your first workflow to get started."
+                : `${workflow.with_steps} with steps · ${workflow.without_steps} without steps`
+            }
+          />
+          <MetricCard
+            label="Total steps"
+            value={workflow.total_steps}
+            helper={`${workflow.pending_steps} pending · ${workflow.in_progress_steps} in progress`}
+          />
+          <MetricCard
+            label="Team members"
+            value={team.total_members}
+            helper={`${team.admins} admins · ${team.members} members`}
+          />
+        </motion.section>
 
         <motion.section
           className="flex justify-start sm:justify-end"

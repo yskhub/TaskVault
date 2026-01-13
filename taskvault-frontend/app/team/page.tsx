@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import { motion } from "framer-motion";
+import { UsageBanner } from "@/components/ui/UsageBanner";
+import { useToast } from "@/components/ui/Toast";
+import { canManageTeam, type Role } from "@/lib/permissions";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
@@ -25,6 +28,7 @@ export default function TeamPage() {
   const [role, setRole] = useState<"admin" | "member">("member");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { push } = useToast();
 
   async function fetchTeam() {
     try {
@@ -38,6 +42,7 @@ export default function TeamPage() {
       });
     } catch (err) {
       console.error("Failed to load team", err);
+      push("Failed to load team", "error");
     }
   }
 
@@ -92,18 +97,28 @@ export default function TeamPage() {
       });
 
       if (!res.ok) {
+        if (res.status === 429) {
+          const message = "Too many requests. Please try again in a minute.";
+          setError(message);
+          push(message, "error");
+          return;
+        }
+
         const text = await res.text();
         try {
           const parsed = JSON.parse(text) as { detail?: string };
           setError(parsed.detail ?? "Failed to add member");
+          push(parsed.detail ?? "Failed to add member", "error");
         } catch {
           setError("Failed to add member");
+          push("Failed to add member", "error");
         }
         return;
       }
 
       setEmail("");
       await fetchTeam();
+      push("Team member added", "success");
     } finally {
       setSubmitting(false);
     }
@@ -115,6 +130,7 @@ export default function TeamPage() {
     const isPro = state.plan === "pro";
     if (!isPro) {
       setError("Only Pro plan accounts can change roles.");
+      push("Only Pro plan accounts can change roles.", "error");
       return;
     }
 
@@ -128,10 +144,17 @@ export default function TeamPage() {
         },
       );
 
-      if (!res.ok) return;
+      if (!res.ok) {
+        if (res.status === 429) {
+          push("Too many requests. Please try again in a minute.", "error");
+        }
+        return;
+      }
       await fetchTeam();
+      push("Member role updated", "success");
     } catch (err) {
       console.error("Failed to update role", err);
+      push("Failed to update role", "error");
     }
   }
 
@@ -141,6 +164,7 @@ export default function TeamPage() {
     const isPro = state.plan === "pro";
     if (!isPro) {
       setError("Only Pro plan accounts can remove members.");
+      push("Only Pro plan accounts can remove members.", "error");
       return;
     }
 
@@ -152,10 +176,17 @@ export default function TeamPage() {
         },
       );
 
-      if (!res.ok) return;
+      if (!res.ok) {
+        if (res.status === 429) {
+          push("Too many requests. Please try again in a minute.", "error");
+        }
+        return;
+      }
       await fetchTeam();
+      push("Member removed", "success");
     } catch (err) {
       console.error("Failed to remove member", err);
+      push("Failed to remove member", "error");
     }
   }
 
@@ -200,6 +231,9 @@ export default function TeamPage() {
   const isPro = state.plan === "pro";
   const limit = isPro ? 10 : 2;
   const remaining = state.status === "ready" ? limit - state.members.length : limit;
+  const used = state.status === "ready" ? state.members.length : 0;
+  const currentRole: Role = "admin";
+  const canManage = canManageTeam(currentRole);
 
   return (
     <main className="min-h-screen text-white px-4 py-10 sm:px-8">
@@ -242,19 +276,14 @@ export default function TeamPage() {
             </span>
           </div>
 
-          {state.status === "ready" && (
+          <UsageBanner used={used} limit={limit} plan={state.plan} />
+
+          {state.status === "ready" && remaining === 1 && (
             <div className="mt-2 text-xs">
-              {remaining <= 0 ? (
-                <p className="rounded-md border border-red-500/60 bg-red-600/10 px-3 py-2 text-red-100">
-                  You are at the {state.plan} plan limit of {limit} team members. Remove a member or
-                  upgrade your plan to add more.
-                </p>
-              ) : remaining === 1 ? (
-                <p className="rounded-md border border-amber-500/60 bg-amber-500/10 px-3 py-2 text-amber-100">
-                  You are near the {state.plan} plan limit. You can add <strong>1</strong> more
-                  member before hitting the cap of {limit}.
-                </p>
-              ) : null}
+              <p className="rounded-md border border-amber-500/60 bg-amber-500/10 px-3 py-2 text-amber-100">
+                You are near the {state.plan} plan limit. You can add <strong>1</strong> more member
+                before hitting the cap of {limit}.
+              </p>
             </div>
           )}
 
@@ -287,10 +316,14 @@ export default function TeamPage() {
 
             <button
               type="submit"
-              disabled={submitting || !email.trim() || remaining <= 0}
-              className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/40 hover:bg-blue-500 disabled:opacity-60 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 disabled:hover:translate-y-0"
+              disabled={submitting || !email.trim() || remaining <= 0 || !canManage}
+              className={`inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold shadow-md shadow-blue-500/40 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 disabled:hover:translate-y-0 ${
+                submitting || !email.trim() || remaining <= 0 || !canManage
+                  ? "bg-slate-800 text-slate-400 cursor-not-allowed opacity-70"
+                  : "bg-accent text-white hover:bg-blue-500"
+              }`}
             >
-              {submitting ? "Adding member..." : "Add member"}
+              {submitting ? "Adding member..." : canManage ? "Add member" : "Only admins can add"}
             </button>
           </form>
 
@@ -332,6 +365,7 @@ export default function TeamPage() {
                                   type="button"
                                   onClick={() => updateRole(member.id, "admin")}
                                   className="rounded-md border border-purple-500/60 bg-purple-600/20 px-3 py-1 font-semibold text-purple-100 hover:bg-purple-600/30 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0"
+                                  disabled={!canManage}
                                 >
                                   Make admin
                                 </button>
@@ -341,6 +375,7 @@ export default function TeamPage() {
                                   type="button"
                                   onClick={() => updateRole(member.id, "member")}
                                   className="rounded-md border border-slate-600 bg-slate-800 px-3 py-1 font-semibold text-slate-100 hover:bg-slate-700 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0"
+                                  disabled={!canManage}
                                 >
                                   Make member
                                 </button>
@@ -349,6 +384,7 @@ export default function TeamPage() {
                                 type="button"
                                 onClick={() => removeMember(member.id)}
                                 className="rounded-md border border-red-500/60 bg-red-600/20 px-3 py-1 font-semibold text-red-100 hover:bg-red-600/30 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0"
+                                disabled={!canManage}
                               >
                                 Remove
                               </button>
