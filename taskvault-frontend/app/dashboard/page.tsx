@@ -122,7 +122,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8">
+      <main className="min-h-screen text-white px-4 py-10 sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 animate-pulse">
           <header className="space-y-3">
             <div className="h-3 w-40 rounded-full bg-slate-800/80" />
@@ -177,7 +177,7 @@ export default function DashboardPage() {
 
   if (error || !data) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-primary text-white">
+      <main className="flex min-h-screen items-center justify-center text-white">
         <div className="rounded-xl bg-slate-900/70 p-8 shadow-xl border border-slate-800 text-center max-w-md mx-auto">
           <h1 className="mb-2 text-2xl font-bold">Dashboard unavailable</h1>
           <p className="mb-3 text-sm text-slate-300">{error ?? "No analytics data available yet."}</p>
@@ -236,7 +236,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8">
+    <main className="min-h-screen text-white px-4 py-10 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <motion.header
           className="space-y-2"

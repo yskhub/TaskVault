@@ -50,7 +50,7 @@ const sections = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8 lg:px-10 xl:px-16">
+    <main className="min-h-screen text-white px-4 py-10 sm:px-8 lg:px-10 xl:px-16">
       <div className="flex w-full flex-col gap-16">
         <motion.header
           className="space-y-4"

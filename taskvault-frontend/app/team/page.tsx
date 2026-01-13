@@ -161,7 +161,7 @@ export default function TeamPage() {
 
   if (state.status === "loading") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-primary text-white">
+      <main className="flex min-h-screen items-center justify-center text-white">
         <p className="text-sm text-slate-200">Loading team...</p>
       </main>
     );
@@ -169,7 +169,7 @@ export default function TeamPage() {
 
   if (state.status === "signed_out") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-primary text-white">
+      <main className="flex min-h-screen items-center justify-center text-white">
         <div className="rounded-xl bg-slate-900/70 p-8 shadow-xl border border-slate-800 text-center">
           <h1 className="mb-2 text-2xl font-bold">You are not signed in</h1>
           <p className="mb-4 text-sm text-slate-300">
@@ -191,7 +191,7 @@ export default function TeamPage() {
   const remaining = state.status === "ready" ? limit - state.members.length : limit;
 
   return (
-    <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8">
+    <main className="min-h-screen text-white px-4 py-10 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <motion.header
           className="space-y-2"
