@@ -50,8 +50,8 @@ const sections = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8 lg:px-10">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-16">
+    <main className="min-h-screen bg-primary text-white px-4 py-10 sm:px-8 lg:px-10 xl:px-16">
+      <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-16">
         <motion.header
           className="space-y-4"
           initial={{ opacity: 0, y: 16 }}
@@ -63,7 +63,7 @@ export default function Home() {
           </span>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight">
+              <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight lg:whitespace-nowrap">
                 Your subscription-friendly workflow hub
               </h1>
               <p className="mt-5 max-w-3xl text-lg text-slate-200">
