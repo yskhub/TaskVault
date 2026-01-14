@@ -75,6 +75,51 @@ export default function AuditLogsPage() {
           </p>
         </header>
 
+        {!error && logs.length > 0 && (
+          <section className="grid gap-4 md:grid-cols-4 text-xs sm:text-sm">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 mb-1">
+                Total events
+              </p>
+              <p className="text-2xl font-semibold text-slate-50">{logs.length}</p>
+              <p className="mt-1 text-[11px] text-slate-400">
+                Most recent {logs.length === 50 ? '50' : logs.length} actions from the system.
+              </p>
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 mb-1">
+                Unique actors
+              </p>
+              <p className="text-2xl font-semibold text-slate-50">
+                {new Set(logs.map((l) => l.actor_id ?? 'system')).size}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-400">Users or system processes that triggered events.</p>
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 mb-1">
+                Admin actions
+              </p>
+              <p className="text-2xl font-semibold text-slate-50">
+                {logs.filter((l) => l.actor_role === 'admin').length}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-400">Events performed by admin-level accounts.</p>
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 mb-1">
+                Last 24 hours
+              </p>
+              <p className="text-2xl font-semibold text-slate-50">
+                {logs.filter((l) => {
+                  const created = new Date(l.created_at).getTime();
+                  const now = Date.now();
+                  return now - created <= 24 * 60 * 60 * 1000;
+                }).length}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-400">Recent activity window for quick checks.</p>
+            </div>
+          </section>
+        )}
+
         {error && (
           <div className="rounded-md border border-red-500/60 bg-red-500/10 px-4 py-3 text-sm text-red-100">
             {error}
@@ -87,36 +132,60 @@ export default function AuditLogsPage() {
             creating a workflow, then refresh.
           </p>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/80">
-            <table className="min-w-full text-left text-sm">
-              <thead className="border-b border-slate-800 bg-slate-900/90 text-xs uppercase tracking-wide text-slate-400">
-                <tr>
-                  <th className="px-4 py-2 font-semibold">When</th>
-                  <th className="px-4 py-2 font-semibold">Action</th>
-                  <th className="px-4 py-2 font-semibold">Target</th>
-                  <th className="px-4 py-2 font-semibold">Actor</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logs.map((log) => (
-                  <tr key={log.id} className="border-b border-slate-800/70 last:border-0">
-                    <td className="px-4 py-2 text-xs text-slate-300">
-                      {new Date(log.created_at).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-2 text-slate-100 text-xs sm:text-sm">
-                      {log.action}
-                    </td>
-                    <td className="px-4 py-2 text-xs text-slate-300">
-                      {log.target ?? "—"}
-                    </td>
-                    <td className="px-4 py-2 text-xs text-slate-300">
-                      {log.actor_id ?? "system"} {log.actor_role ? `(${log.actor_role})` : ""}
-                    </td>
-                  </tr>
+          <>
+            <section className="rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-xs sm:text-sm text-slate-300">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                Recent highlights
+              </p>
+              <ul className="space-y-1.5">
+                {logs.slice(0, 5).map((log) => (
+                  <li key={log.id} className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] text-slate-200">
+                      {new Date(log.created_at).toLocaleTimeString()}
+                    </span>
+                    <span className="font-medium text-slate-100">{log.action}</span>
+                    {log.target && (
+                      <span className="text-slate-400">on {log.target}</span>
+                    )}
+                    <span className="text-slate-500">
+                      by {log.actor_id ?? 'system'}{log.actor_role ? ` (${log.actor_role})` : ''}
+                    </span>
+                  </li>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </ul>
+            </section>
+
+            <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/80">
+              <table className="min-w-full text-left text-sm">
+                <thead className="border-b border-slate-800 bg-slate-900/90 text-xs uppercase tracking-wide text-slate-400">
+                  <tr>
+                    <th className="px-4 py-2 font-semibold">When</th>
+                    <th className="px-4 py-2 font-semibold">Action</th>
+                    <th className="px-4 py-2 font-semibold">Target</th>
+                    <th className="px-4 py-2 font-semibold">Actor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {logs.map((log) => (
+                    <tr key={log.id} className="border-b border-slate-800/70 last:border-0">
+                      <td className="px-4 py-2 text-xs text-slate-300">
+                        {new Date(log.created_at).toLocaleString()}
+                      </td>
+                      <td className="px-4 py-2 text-slate-100 text-xs sm:text-sm">
+                        {log.action}
+                      </td>
+                      <td className="px-4 py-2 text-xs text-slate-300">
+                        {log.target ?? ''}
+                      </td>
+                      <td className="px-4 py-2 text-xs text-slate-300">
+                        {log.actor_id ?? 'system'} {log.actor_role ? `(${log.actor_role})` : ''}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </main>
