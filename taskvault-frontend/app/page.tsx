@@ -61,9 +61,9 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <span className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/60 px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-slate-300">
-            TaskVault · Full stack demo
-          </span>
+          <p className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-100">
+            TaskVault
+          </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight lg:max-w-none">

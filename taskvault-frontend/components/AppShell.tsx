@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -10,11 +10,13 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { CommandPalette, type CommandAction } from "@/components/command/CommandPalette";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import ProceduralGroundBackground from "@/components/ui/procedural-ground-background";
+import { supabase } from "@/lib/supabaseClient";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [backgroundMode, setBackgroundMode] = useState<"dots" | "ground">("dots");
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const pathname = usePathname();
 
   const actions: CommandAction[] = useMemo(
@@ -40,6 +42,33 @@ export function AppShell({ children }: { children: ReactNode }) {
   );
 
   useKeyboard("k", () => setPaletteOpen(true));
+
+  useEffect(() => {
+    let isMounted = true;
+
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        if (!isMounted) return;
+        setUserEmail(data.user?.email ?? null);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setUserEmail(null);
+      });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
+      setUserEmail(session?.user?.email ?? null);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <ThemeProvider>
@@ -84,13 +113,19 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
         <div className="pointer-events-none fixed right-4 top-4 z-20 flex flex-col items-end gap-2 sm:right-6 sm:top-6">
-          <div className="pointer-events-auto flex gap-2 sm:gap-3">
-            <Link
-              href="/auth"
-              className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-md shadow-blue-500/40 hover:bg-blue-500 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-500/50 whitespace-nowrap transition-transform duration-150"
-            >
-              Sign in / Sign up
-            </Link>
+          <div className="pointer-events-auto flex items-center gap-2 sm:gap-3">
+            {userEmail ? (
+              <span className="inline-flex items-center rounded-md border border-slate-700 bg-slate-900/80 px-3 py-1 text-[11px] sm:text-xs font-semibold text-slate-100 whitespace-nowrap">
+                Signed in as {userEmail}
+              </span>
+            ) : (
+              <Link
+                href="/auth"
+                className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-md shadow-blue-500/40 hover:bg-blue-500 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-500/50 whitespace-nowrap transition-transform duration-150"
+              >
+                Sign in / Sign up
+              </Link>
+            )}
             <Link
               href="/dashboard"
               className="inline-flex items-center justify-center rounded-md border border-slate-700 bg-slate-900/80 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-100 hover:bg-slate-800 hover:-translate-y-0.5 whitespace-nowrap transition-transform duration-150"
