@@ -4,6 +4,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Workflow, Users, BarChart3, KeyRound, CreditCard } from "lucide-react";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { Page } from "@/components/motion/Page";
+import { ListItem } from "@/components/motion/ListItem";
+import DemoCarousel from "@/components/demo/DemoCarousel";
 
 const sections = [
   {
@@ -50,7 +53,7 @@ const sections = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen text-white px-4 py-10 sm:px-8 lg:px-10 xl:px-16">
+    <Page className="min-h-screen text-white px-4 py-10 sm:px-8 lg:px-10 xl:px-16">
       <div className="flex w-full flex-col gap-16">
         <motion.header
           className="space-y-4"
@@ -98,12 +101,7 @@ export default function Home() {
           {sections.map((item, index) => {
             const Icon = item.icon;
             return (
-              <motion.div
-                key={item.href}
-                initial={{ opacity: 0, y: 8, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.35, delay: 0.15 + index * 0.03, ease: "easeOut" }}
-              >
+              <ListItem key={item.href} index={index}>
                 <Link href={item.href} className="group block h-full">
                   <SpotlightCard
                     className="h-full p-5 flex flex-col gap-3 bg-neutral-950/60 transition-transform duration-200 ease-out group-hover:-translate-y-1 group-hover:scale-[1.02]"
@@ -130,9 +128,17 @@ export default function Home() {
                     </p>
                   </SpotlightCard>
                 </Link>
-              </motion.div>
+              </ListItem>
             );
           })}
+        </motion.section>
+
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut", delay: 0.16 }}
+        >
+          <DemoCarousel />
         </motion.section>
 
         <motion.section
@@ -164,7 +170,7 @@ export default function Home() {
           </div>
         </motion.section>
       </div>
-    </main>
+    </Page>
   );
 }
 

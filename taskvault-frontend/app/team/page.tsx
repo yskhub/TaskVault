@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { UsageBanner } from "@/components/ui/UsageBanner";
 import { useToast } from "@/components/ui/Toast";
 import { canManageTeam, type Role } from "@/lib/permissions";
+import { Page } from "@/components/motion/Page";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
@@ -192,7 +193,7 @@ export default function TeamPage() {
 
   if (state.status === "loading") {
     return (
-      <main className="min-h-screen text-white px-4 py-10 sm:px-8">
+      <Page className="min-h-screen text-white px-4 py-10 sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 animate-pulse">
           <div className="space-y-3">
             <div className="h-3 w-40 rounded-full bg-slate-800/80" />
@@ -205,13 +206,13 @@ export default function TeamPage() {
             <div className="h-10 w-full rounded-md bg-slate-950/80" />
           </div>
         </div>
-      </main>
+      </Page>
     );
   }
 
   if (state.status === "signed_out") {
     return (
-      <main className="flex min-h-screen items-center justify-center text-white">
+      <Page className="flex min-h-screen items-center justify-center text-white">
         <div className="rounded-xl bg-slate-900/70 p-8 shadow-xl border border-slate-800 text-center">
           <h1 className="mb-2 text-2xl font-bold">You are not signed in</h1>
           <p className="mb-4 text-sm text-slate-300">
@@ -224,7 +225,7 @@ export default function TeamPage() {
             Go to Auth
           </a>
         </div>
-      </main>
+      </Page>
     );
   }
 
@@ -236,7 +237,7 @@ export default function TeamPage() {
   const canManage = canManageTeam(currentRole);
 
   return (
-    <main className="min-h-screen text-white px-4 py-10 sm:px-8">
+    <Page className="min-h-screen text-white px-4 py-10 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <motion.header
           className="space-y-2"
@@ -405,6 +406,6 @@ export default function TeamPage() {
         </section>
         </motion.section>
       </div>
-    </main>
+    </Page>
   );
 }

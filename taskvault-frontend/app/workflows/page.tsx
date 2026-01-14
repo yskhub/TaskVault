@@ -314,6 +314,7 @@ import { motion } from "framer-motion";
 import { WorkflowCard } from "@/components/workflows/WorkflowCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useToast } from "@/components/ui/Toast";
+import { Page } from "@/components/motion/Page";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
@@ -452,7 +453,7 @@ export default function WorkflowsPage() {
   }
 
   return (
-    <main className="min-h-screen text-white px-4 py-10 sm:px-8">
+    <Page className="min-h-screen text-white px-4 py-10 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <motion.header
           className="space-y-2"
@@ -686,6 +687,6 @@ export default function WorkflowsPage() {
           )}
         </motion.section>
       </div>
-    </main>
+    </Page>
   );
 }
