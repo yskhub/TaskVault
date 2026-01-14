@@ -9,23 +9,23 @@ const slides = [
     title: 'Your Command Center',
     caption:
       'Get a real-time view of workflows, team usage, and completion rates.',
-    image: '/demo/slide-1.svg?v=1',
+    image: '/demo/slide-1.svg?v=2',
   },
   {
     title: 'Create Workflows in Seconds',
     caption: 'Define steps, assign owners, and track progress without friction.',
-    image: '/demo/slide-2.svg?v=1',
+    image: '/demo/slide-2.svg?v=2',
   },
   {
     title: 'Manage Your Team',
     caption: 'Add members, control roles, and stay within plan limits.',
-    image: '/demo/slide-3.svg?v=1',
+    image: '/demo/slide-3.svg?v=2',
   },
   {
     title: 'Track What Matters',
     caption:
       'Visual analytics help you understand progress and bottlenecks instantly.',
-    image: '/demo/slide-4.svg?v=1',
+    image: '/demo/slide-4.svg?v=2',
   },
 ] as const;
 
@@ -81,12 +81,6 @@ export default function DemoCarousel() {
                     width={1440}
                     height={900}
                     className="h-full w-full object-contain"
-                    onError={(event) => {
-                      const target = event.currentTarget as HTMLImageElement;
-                      // Prevent infinite loop if fallback also fails
-                      target.onerror = null;
-                      target.src = '/demo/slide-3.svg?v=1';
-                    }}
                     loading={index === 0 ? 'eager' : 'lazy'}
                   />
                 </div>
