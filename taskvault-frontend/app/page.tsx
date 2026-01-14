@@ -56,27 +56,37 @@ export default function Home() {
     <Page className="min-h-screen text-white px-4 py-10 sm:px-8 lg:px-10 xl:px-16">
       <div className="flex w-full flex-col gap-16">
         <motion.header
-          className="space-y-4"
+          className="relative space-y-4 overflow-visible"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
+          <div className="pointer-events-none absolute inset-x-0 -top-40 h-72 bg-gradient-to-b from-sky-500/15 via-slate-950/0 to-transparent blur-3xl" />
           <p className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-100">
             TaskVault
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight lg:max-w-none">
-                Organize teams. Track workflows.
-                <span className="block text-accent">See what matters, fast.</span>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight lg:max-w-4xl">
+                Build workflows. Enforce limits. Track execution.
               </h1>
-              <p className="mt-5 max-w-3xl text-lg text-slate-200">
-                TaskVault brings together authentication, plans, workflows, team management,
-                and analytics into a single, subscription-friendly console.
+              <p className="mt-4 max-w-2xl text-lg text-slate-200">
+                A secure internal tool for serious teams.
+              </p>
+              <p className="mt-3 max-w-3xl text-sm sm:text-base text-slate-300">
+                Role-based access. Usage limits. Audit trails. No payments. No fluff.
               </p>
             </div>
           </div>
         </motion.header>
+
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut", delay: 0.12 }}
+        >
+          <DemoCarousel />
+        </motion.section>
 
         <motion.section
           className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
@@ -117,14 +127,6 @@ export default function Home() {
               </ListItem>
             );
           })}
-        </motion.section>
-
-        <motion.section
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: "easeOut", delay: 0.16 }}
-        >
-          <DemoCarousel />
         </motion.section>
 
         <motion.section
