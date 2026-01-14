@@ -102,9 +102,9 @@ export default function Home() {
             const Icon = item.icon;
             return (
               <ListItem key={item.href} index={index}>
-                <Link href={item.href} className="group block h-full">
+                <Link href={item.href} className="group block">
                   <SpotlightCard
-                    className="h-full p-4 flex flex-col gap-2 bg-neutral-950/60 transition-transform duration-200 ease-out group-hover:-translate-y-1 group-hover:scale-[1.02]"
+                    className="p-4 flex flex-col gap-2 bg-neutral-950/60 transition-transform duration-200 ease-out group-hover:-translate-y-1 group-hover:scale-[1.02]"
                     spotlightColor={item.spotlightColor}
                   >
                     <div className="mb-2 flex items-center justify-between gap-2">
