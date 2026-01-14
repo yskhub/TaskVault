@@ -93,7 +93,7 @@ export default function Home() {
         </motion.header>
 
         <motion.section
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+          className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }}
@@ -104,15 +104,15 @@ export default function Home() {
               <ListItem key={item.href} index={index}>
                 <Link href={item.href} className="group block h-full">
                   <SpotlightCard
-                    className="h-full p-5 flex flex-col gap-3 bg-neutral-950/60 transition-transform duration-200 ease-out group-hover:-translate-y-1 group-hover:scale-[1.02]"
+                    className="h-full p-4 flex flex-col gap-2 bg-neutral-950/60 transition-transform duration-200 ease-out group-hover:-translate-y-1 group-hover:scale-[1.02]"
                     spotlightColor={item.spotlightColor}
                   >
-                    <div className="mb-3 flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 flex items-center justify-center rounded-lg bg-neutral-800 border border-neutral-700">
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="h-8 w-8 flex items-center justify-center rounded-lg bg-neutral-800 border border-neutral-700">
                           <Icon className="h-4 w-4 text-slate-100" />
                         </div>
-                        <p className="text-base font-semibold uppercase tracking-[0.18em] text-slate-200">
+                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
                           {item.title}
                         </p>
                       </div>
@@ -120,7 +120,7 @@ export default function Home() {
                         {item.badge}
                       </span>
                     </div>
-                    <p className="text-base text-slate-100 mb-2 leading-relaxed">
+                    <p className="text-sm text-slate-100 mb-2 leading-relaxed">
                       {item.description}
                     </p>
                     <p className="mt-auto text-sm sm:text-base font-semibold text-accent group-hover:text-blue-400">
