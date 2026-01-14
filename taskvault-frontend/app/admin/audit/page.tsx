@@ -97,7 +97,7 @@ export default function AuditLogsPage() {
           </p>
         </header>
 
-        {logs.length > 0 && (
+        {!error && (
           <section className="flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-slate-400">Time range:</span>
@@ -144,7 +144,7 @@ export default function AuditLogsPage() {
           </section>
         )}
 
-        {!error && logs.length > 0 && (
+        {!error && (
           <section className="grid gap-4 md:grid-cols-4 text-xs sm:text-sm">
             <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 mb-1">
