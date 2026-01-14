@@ -78,7 +78,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         ) : (
           <ProceduralGroundBackground />
         )}
-        <div className="pointer-events-none fixed left-4 top-4 z-20 flex flex-col gap-2 sm:left-6 sm:top-6">
+        <div className="pointer-events-none fixed left-4 top-4 z-40 flex flex-col gap-2 sm:left-6 sm:top-6">
           {pathname !== "/" && (
             <Link
               href="/"
@@ -112,7 +112,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </button>
           </div>
         </div>
-        <div className="pointer-events-none fixed right-4 top-4 z-20 flex flex-col items-end gap-2 sm:right-6 sm:top-6">
+        <div className="pointer-events-none fixed right-4 top-4 z-40 flex flex-col items-end gap-2 sm:right-6 sm:top-6">
           <div className="pointer-events-auto flex items-center gap-2 sm:gap-3">
             {userEmail ? (
               <span className="inline-flex items-center rounded-md border border-slate-700 bg-slate-900/80 px-3 py-1 text-[11px] sm:text-xs font-semibold text-slate-100 whitespace-nowrap">
