@@ -27,8 +27,9 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 
 4. Tables in Supabase
 
-Run the schema script from this folder:
-- `supbase/01_schema.sql`
+Run the schema scripts from this folder (in order):
+- `supbase/01_schema.sql` – core tables (profiles, team_members)
+- `supbase/03_schema_advanced.sql` – onboarding flag, usage_events, audit_logs, rate_limits
 
 Optional sample data for tests:
 - `supbase/02_seed_basic.sql`

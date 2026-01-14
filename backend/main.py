@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from datetime import datetime, timedelta
 from urllib import error as urlerror, request as urlrequest
 
 from fastapi import FastAPI, HTTPException
@@ -9,6 +10,15 @@ from pydantic import BaseModel
 from typing import List, Literal, Optional
 from dotenv import load_dotenv
 from pathlib import Path
+
+try:
+    # When imported as a package module (e.g. `backend.main`).
+    from .permissions import enforce_team_limit  # type: ignore[import]
+    from .analytics import log_usage_event  # type: ignore[import]
+except ImportError:  # pragma: no cover - fallback for direct execution
+    # Fallback for running `main.py` directly or via `uvicorn main:app` from the backend folder.
+    from permissions import enforce_team_limit  # type: ignore[import]
+    from analytics import log_usage_event  # type: ignore[import]
 
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
@@ -100,6 +110,7 @@ class WorkflowCreate(BaseModel):
 
 class Workflow(WorkflowCreate):
     id: int
+    deleted_at: Optional[datetime] = None
 
 
 workflows: List[Workflow] = []
@@ -107,18 +118,32 @@ next_workflow_id: int = 1
 
 
 @app.post("/workflows", response_model=Workflow)
-def create_workflow(payload: WorkflowCreate) -> Workflow:
+async def create_workflow(payload: WorkflowCreate) -> Workflow:
     global next_workflow_id
+
+    # Basic write-rate limiting keyed by a generic identifier.
+    _rate_limit("public", "create_workflow", "write")
 
     workflow = Workflow(id=next_workflow_id, **payload.model_dump())
     next_workflow_id += 1
     workflows.append(workflow)
+    # Best-effort analytics: log workflow creation.
+    await log_usage_event(user_id=None, event="workflow_created", metadata={"workflow_id": workflow.id})
+    _write_audit_log("WORKFLOW_CREATED", target=str(workflow.id))
     return workflow
 
 
 @app.get("/workflows", response_model=List[Workflow])
 def list_workflows() -> List[Workflow]:
-    return workflows
+    # Only return active (non-deleted) workflows by default.
+    return [w for w in workflows if w.deleted_at is None]
+
+
+@app.get("/workflows/deleted", response_model=List[Workflow])
+def list_deleted_workflows() -> List[Workflow]:
+    """Return soft-deleted workflows for the "trash" view."""
+
+    return [w for w in workflows if w.deleted_at is not None]
 
 
 class StepUpdate(BaseModel):
@@ -149,6 +174,32 @@ def update_step(workflow_id: int, step_index: int, update: StepUpdate) -> Workfl
     return workflow
 
 
+@app.delete("/workflows/{workflow_id}", status_code=204)
+def soft_delete_workflow(workflow_id: int) -> None:
+    """Soft-delete a workflow by setting deleted_at instead of removing it."""
+
+    try:
+        workflow = next(w for w in workflows if w.id == workflow_id)
+    except StopIteration:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    if workflow.deleted_at is None:
+        workflow.deleted_at = datetime.utcnow()
+
+
+@app.post("/workflows/{workflow_id}/restore", response_model=Workflow)
+def restore_workflow(workflow_id: int) -> Workflow:
+    """Restore a soft-deleted workflow back to the active list."""
+
+    try:
+        workflow = next(w for w in workflows if w.id == workflow_id)
+    except StopIteration:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    workflow.deleted_at = None
+    return workflow
+
+
 # -----------------------------
 # Phase 4: User & team management
 # -----------------------------
@@ -171,6 +222,15 @@ class TeamAddRequest(BaseModel):
 
 class TeamRoleUpdate(BaseModel):
     role: Literal["admin", "member"]
+
+
+class AuditLog(BaseModel):
+    id: str
+    actor_id: Optional[str] = None
+    actor_role: Optional[str] = None
+    action: str
+    target: Optional[str] = None
+    created_at: datetime
 
 
 def _get_supabase_rest_base() -> tuple[str, str]:
@@ -227,6 +287,152 @@ def _supabase_rest_request(
         raise HTTPException(status_code=500, detail=f"Supabase error: {e}")
 
 
+def _write_audit_log(action: str, target: str | None = None, *, actor_id: str | None = None, actor_role: str | None = None) -> None:
+    """Best-effort audit logging to Supabase `audit_logs` table.
+
+    This never raises; if Supabase is unavailable or the table is missing, the
+    main request should still succeed.
+    """
+
+    body: dict[str, object] = {"action": action}
+    if target is not None:
+        body["target"] = target
+    if actor_id is not None:
+        body["actor_id"] = actor_id
+    if actor_role is not None:
+        body["actor_role"] = actor_role
+
+    try:
+        _supabase_rest_request("POST", "audit_logs", body=body)
+    except HTTPException:
+        # Ignore failures from audit logging.
+        return
+
+
+WINDOW_SECONDS = 60
+
+LIMITS: dict[str, int] = {
+    "auth": 10,
+    "write": 30,
+    "read": 120,
+}
+
+
+def _rate_limit(identifier: str, endpoint: str, limit_key: str) -> None:
+    """Simple time-window rate limiting backed by Supabase.
+
+    This uses the free PostgREST API and a `rate_limits` table.
+    """
+
+    if limit_key not in LIMITS:
+        raise HTTPException(status_code=500, detail="Invalid rate limit key")
+
+    limit = LIMITS[limit_key]
+    now = datetime.utcnow()
+    window_start = now - timedelta(seconds=WINDOW_SECONDS)
+
+    # Fetch the most recent window entry for this identifier/endpoint.
+    query = (
+        f"identifier=eq.{identifier}&endpoint=eq.{endpoint}"
+        f"&window_start=gte.{window_start.isoformat()}&order=window_start.desc&limit=1"
+    )
+
+    try:
+        status, data = _supabase_rest_request("GET", "rate_limits", query=query)
+    except HTTPException:
+        # If Supabase or the rate_limits table is unavailable, skip limiting
+        # rather than breaking the main request.
+        return
+
+    if status != 200:
+        # On failure, do not block the request; just skip limiting.
+        return
+
+    rows = data or []
+    row = rows[0] if rows else None
+
+    if row is None:
+        # First request in this window.
+        try:
+            _supabase_rest_request(
+                "POST",
+                "rate_limits",
+                body={
+                    "identifier": identifier,
+                    "endpoint": endpoint,
+                    "window_start": now.isoformat(),
+                    "request_count": 1,
+                },
+            )
+        except HTTPException:
+            # If we can't create the row, just continue without enforcing
+            # limits for this request.
+            return
+        return
+
+    count = int(row.get("request_count", 0))
+    if count >= limit:
+        raise HTTPException(
+            status_code=429,
+            detail="Too many requests. Please slow down.",
+        )
+
+    # Increment the existing row.
+    try:
+        _supabase_rest_request(
+            "PATCH",
+            "rate_limits",
+            query=f"id=eq.{row['id']}",
+            body={"request_count": count + 1},
+        )
+    except HTTPException:
+        # If we fail to increment, do not fail the main request.
+        return
+
+
+@app.get("/audit-logs", response_model=List[AuditLog])
+def list_audit_logs(
+    limit: int = 50,
+    actor_role: Literal["admin", "member"] = "member",
+) -> List[AuditLog]:
+    """List recent audit log entries.
+
+    In a real deployment, `actor_role` would come from authentication
+    (e.g. a JWT or Supabase session). Here it's a simple query parameter
+    to demonstrate admin-only access.
+    """
+
+    if actor_role != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can view audit logs")
+
+    if limit <= 0:
+        limit = 50
+    if limit > 200:
+        limit = 200
+
+    query = (
+        f"select=id,actor_id,actor_role,action,target,created_at"
+        f"&order=created_at.desc&limit={limit}"
+    )
+
+    status, data = _supabase_rest_request("GET", "audit_logs", query=query)
+    if status != 200:
+        raise HTTPException(status_code=502, detail="Failed to load audit logs from Supabase")
+
+    rows = data or []
+    return [
+        AuditLog(
+            id=str(row["id"]),
+            actor_id=row.get("actor_id"),
+            actor_role=row.get("actor_role"),
+            action=row["action"],
+            target=row.get("target"),
+            created_at=datetime.fromisoformat(row["created_at"]),
+        )
+        for row in rows
+    ]
+
+
 @app.get("/team", response_model=List[TeamMemberOut])
 def list_team() -> List[TeamMemberOut]:
     """List team members stored in the Supabase `team_members` table.
@@ -247,12 +453,15 @@ def list_team() -> List[TeamMemberOut]:
 
 
 @app.post("/team/add", response_model=TeamMemberOut)
-def add_member(payload: TeamAddRequest) -> TeamMemberOut:
+async def add_member(payload: TeamAddRequest) -> TeamMemberOut:
     """Add a team member while enforcing subscription limits using Supabase storage.
 
     - Free plan: max 2 members
     - Pro plan: max 10 members
     """
+
+    # Basic write-rate limiting keyed by a generic identifier.
+    _rate_limit("public", "add_member", "write")
 
     # Load existing members to enforce limits and uniqueness.
     existing = list_team()
@@ -260,12 +469,7 @@ def add_member(payload: TeamAddRequest) -> TeamMemberOut:
     if any(m.email.lower() == payload.email.lower() for m in existing):
         raise HTTPException(status_code=400, detail="Member with this email already exists")
 
-    limit = 2 if payload.plan == "free" else 10
-    if len(existing) >= limit:
-        raise HTTPException(
-            status_code=403,
-            detail=f"{payload.plan.capitalize()} plan is limited to {limit} team members.",
-        )
+    enforce_team_limit(payload.plan, len(existing))
 
     status, data = _supabase_rest_request(
         "POST",
@@ -282,7 +486,19 @@ def add_member(payload: TeamAddRequest) -> TeamMemberOut:
         raise HTTPException(status_code=502, detail="Supabase did not return the created member")
 
     row = rows[0]
-    return TeamMemberOut(id=row["id"], email=row["email"], role=row["role"])
+
+    member = TeamMemberOut(id=row["id"], email=row["email"], role=row["role"])
+
+    # Best-effort analytics: log team growth against plan.
+    await log_usage_event(
+        user_id=None,
+        event="team_member_added",
+        metadata={"email": member.email, "role": member.role, "plan": payload.plan},
+    )
+
+    _write_audit_log("ADD_TEAM_MEMBER", target=member.email, actor_role="admin")
+
+    return member
 
 
 @app.patch("/team/{member_id}/role", response_model=TeamMemberOut)
@@ -315,7 +531,9 @@ def update_member_role(
         raise HTTPException(status_code=404, detail="Member not found")
 
     row = rows[0]
-    return TeamMemberOut(id=row["id"], email=row["email"], role=row["role"])
+    member = TeamMemberOut(id=row["id"], email=row["email"], role=row["role"])
+    _write_audit_log("UPDATE_TEAM_ROLE", target=member.email, actor_role="admin")
+    return member
 
 
 @app.delete("/team/{member_id}", status_code=204)
@@ -338,10 +556,12 @@ def remove_member(
     )
 
     if status == 204:
+        _write_audit_log("REMOVE_TEAM_MEMBER", target=str(member_id), actor_role="admin")
         return
 
     if status == 200:
         # Some PostgREST configs may return 200 with a body, treat as success.
+        _write_audit_log("REMOVE_TEAM_MEMBER", target=str(member_id), actor_role="admin")
         return
 
     raise HTTPException(status_code=404, detail="Member not found")
