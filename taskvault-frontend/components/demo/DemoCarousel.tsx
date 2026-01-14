@@ -10,23 +10,23 @@ const slides = [
     title: 'Your Command Center',
     caption:
       'Get a real-time view of workflows, team usage, and completion rates.',
-    image: '/demo/slide-1.png',
+    image: '/demo/slide-1.svg',
   },
   {
     title: 'Create Workflows in Seconds',
     caption: 'Define steps, assign owners, and track progress without friction.',
-    image: '/demo/slide-2.png',
+    image: '/demo/slide-2.svg',
   },
   {
     title: 'Manage Your Team',
     caption: 'Add members, control roles, and stay within plan limits.',
-    image: '/demo/slide-3.png',
+    image: '/demo/slide-3.svg',
   },
   {
     title: 'Track What Matters',
     caption:
       'Visual analytics help you understand progress and bottlenecks instantly.',
-    image: '/demo/slide-4.png',
+    image: '/demo/slide-4.svg',
   },
 ] as const;
 
