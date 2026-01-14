@@ -50,34 +50,39 @@ export default function TeamPage() {
 
   useEffect(() => {
     async function loadProfileAndTeam() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-      if (!user) {
-        setState({ status: "signed_out" });
-        return;
-      }
+    if (!user) {
+      setState({ status: "signed_out" });
+      return;
+    }
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("subscription_plan, email")
-        .eq("id", user.id)
-        .maybeSingle();
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("subscription_plan, email")
+      .eq("id", user.id)
+      .maybeSingle();
 
-      if (error) {
-        console.error(error);
-      }
+    if (error) {
+      console.error(error);
+    }
 
-      const plan = (data?.subscription_plan as Plan) ?? "free";
-      const email = ((data?.email as string | null) ?? user.email) ?? null;
+    const plan = (data?.subscription_plan as Plan) ?? "free";
+    const email = ((data?.email as string | null) ?? user.email) ?? null;
 
-      if (!data) {
-        await supabase.from("profiles").insert({ id: user.id, email, subscription_plan: plan });
-      }
+    if (!data) {
+      await supabase.from("profiles").insert({ id: user.id, email, subscription_plan: plan });
+    }
 
-      setState({ status: "ready", email, plan, members: [] });
-      await fetchTeam();
+    setState({ status: "ready", email, plan, members: [] });
+    await fetchTeam();
+    } catch (err) {
+    console.error("Failed to initialize team profile", err);
+    setState({ status: "signed_out" });
+    }
     }
 
     loadProfileAndTeam();

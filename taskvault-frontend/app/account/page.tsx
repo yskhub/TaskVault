@@ -71,61 +71,72 @@ export default function AccountPage() {
         sessionSummary = `Provider: ${session.token_type ?? "access"}, Expires at: ${
           expiresAt ?? "unknown"
         }`;
-      }
+            try {
+            const {
+              data: { user },
+            } = await supabase.auth.getUser();
 
-      setState({ status: "ready", email, plan, lastSignInAt, sessionSummary });
-    }
+            if (!user) {
+              setState({ status: "signed_out" });
+              return;
+            }
 
-    loadProfile();
-  }, []);
+            const { data, error } = await supabase
+              .from("profiles")
+              .select("subscription_plan, email")
+              .eq("id", user.id)
+              .maybeSingle();
 
-  async function handleSignOut() {
-    if (signingOut) return;
-    setSigningOut(true);
-    try {
-      await supabase.auth.signOut();
-      setState({ status: "signed_out" });
-      router.push("/auth");
-    } finally {
-      setSigningOut(false);
-    }
-  }
+            if (error) {
+              console.error(error);
+            }
 
-  async function mockUpgradeToPro() {
-    if (state.status !== "ready") return;
-    setUpdating(true);
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ subscription_plan: "pro" })
-        .eq("email", state.email ?? "");
+            const plan = (data?.subscription_plan as Plan) ?? "free";
+            const email = ((data?.email as string | null) ?? user.email) ?? null;
 
-      if (!error) {
-        setState({ ...state, plan: "pro" });
-      }
-    } finally {
-      setUpdating(false);
-    }
-  }
+            if (!data) {
+              await supabase.from("profiles").insert({ id: user.id, email, subscription_plan: plan });
+            }
 
-  async function mockDowngradeToFree() {
-    if (state.status !== "ready") return;
-    setUpdating(true);
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ subscription_plan: "free" })
-        .eq("email", state.email ?? "");
+            const {
+              data: { session },
+            } = await supabase.auth.getSession();
+            const lastSignInAt =
+              (user.last_sign_in_at as string | null) ??
+              (session?.user?.last_sign_in_at as string | null) ??
+              null;
 
-      if (!error) {
-        setState({ ...state, plan: "free" });
-      }
-    } finally {
-      setUpdating(false);
-    }
-  }
+            let sessionSummary: string | null = null;
+            if (session) {
+              const expiresAt = session.expires_at
+              ? new Date(session.expires_at * 1000).toISOString()
+              : null;
+              const createdAt = session.user.created_at
+              ? new Date(session.user.created_at).toISOString()
+              : null;
+              const factors = (session.user.factors as any[] | undefined) ?? [];
+              const hasMfa = factors.length > 0;
+              const provider = session.user.app_metadata?.provider ?? "password";
+              const parts = [
+              `Provider: ${provider}`,
+              expiresAt ? `Expires: ${expiresAt}` : null,
+              createdAt ? `Created: ${createdAt}` : null,
+              hasMfa ? "MFA enabled" : "MFA not configured",
+              ].filter(Boolean) as string[];
+              sessionSummary = parts.join(" · ");
+            }
 
-  if (state.status === "loading") {
+            setState({
+              status: "ready",
+              email,
+              plan,
+              lastSignInAt,
+              sessionSummary,
+            });
+            } catch (err) {
+            console.error("Failed to initialize account profile", err);
+            setState({ status: "signed_out" });
+            }
     return (
       <main className="min-h-screen text-white px-4 py-10 sm:px-8">
         <div className="mx-auto flex max-w-3xl flex-col gap-6">

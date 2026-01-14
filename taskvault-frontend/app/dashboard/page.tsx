@@ -173,6 +173,7 @@ export default function DashboardPage() {
         }
       } catch (err) {
         console.error("Error initializing onboarding", err);
+        setIsSignedIn(false);
       }
     }
 
