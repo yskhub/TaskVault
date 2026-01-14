@@ -140,12 +140,17 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
         <div className="pointer-events-none fixed bottom-4 right-4 z-40 flex items-center gap-2 text-[11px] text-slate-300 sm:right-6 sm:bottom-6">
-          <div className="pointer-events-auto inline-flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-950/80 px-3 py-1 shadow-sm shadow-black/40">
+          <button
+            type="button"
+            onClick={() => setPaletteOpen(true)}
+            className="pointer-events-auto inline-flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-950/80 px-3 py-1 shadow-sm shadow-black/40 hover:border-accent hover:text-white hover:bg-slate-900 transition"
+            aria-label="Open quick actions (press K)"
+          >
             <span className="hidden sm:inline text-slate-300">Quick actions</span>
             <span className="rounded-sm border border-slate-600 bg-slate-900 px-1.5 py-0.5 font-mono text-[10px] text-slate-100">
               K
             </span>
-          </div>
+          </button>
         </div>
         <CommandPalette
           actions={actions}
