@@ -18,6 +18,8 @@ export default function AuditLogsPage() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [timeRange, setTimeRange] = useState<"all" | "24h" | "7d">("all");
+  const [actorFilter, setActorFilter] = useState<"all" | "admin" | "system">("all");
 
   useEffect(() => {
     async function loadLogs() {
@@ -59,6 +61,26 @@ export default function AuditLogsPage() {
     );
   }
 
+  const now = Date.now();
+  const filteredLogs = logs.filter((log) => {
+    let matchesTime = true;
+    const created = new Date(log.created_at).getTime();
+    if (timeRange === "24h") {
+      matchesTime = now - created <= 24 * 60 * 60 * 1000;
+    } else if (timeRange === "7d") {
+      matchesTime = now - created <= 7 * 24 * 60 * 60 * 1000;
+    }
+
+    let matchesActor = true;
+    if (actorFilter === "admin") {
+      matchesActor = log.actor_role === "admin";
+    } else if (actorFilter === "system") {
+      matchesActor = log.actor_id === null;
+    }
+
+    return matchesTime && matchesActor;
+  });
+
   return (
     <main className="min-h-screen text-white px-4 py-10 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-6">
@@ -74,6 +96,53 @@ export default function AuditLogsPage() {
             a prototype viewer backed by Supabase.
           </p>
         </header>
+
+        {logs.length > 0 && (
+          <section className="flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-slate-400">Time range:</span>
+              {[
+                { id: "all" as const, label: "All" },
+                { id: "24h" as const, label: "Last 24h" },
+                { id: "7d" as const, label: "Last 7d" },
+              ].map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => setTimeRange(option.id)}
+                  className={`rounded-full border px-3 py-1 transition-colors ${
+                    timeRange === option.id
+                      ? "border-blue-500 bg-blue-500/20 text-blue-100"
+                      : "border-slate-700 bg-slate-900/80 text-slate-300 hover:border-slate-500"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-slate-400">Actor:</span>
+              {[
+                { id: "all" as const, label: "All" },
+                { id: "admin" as const, label: "Admins" },
+                { id: "system" as const, label: "System" },
+              ].map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => setActorFilter(option.id)}
+                  className={`rounded-full border px-3 py-1 transition-colors ${
+                    actorFilter === option.id
+                      ? "border-blue-500 bg-blue-500/20 text-blue-100"
+                      : "border-slate-700 bg-slate-900/80 text-slate-300 hover:border-slate-500"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
 
         {!error && logs.length > 0 && (
           <section className="grid gap-4 md:grid-cols-4 text-xs sm:text-sm">
@@ -131,6 +200,10 @@ export default function AuditLogsPage() {
             No audit events have been recorded yet. Perform an action like adding a team member or
             creating a workflow, then refresh.
           </p>
+        ) : filteredLogs.length === 0 ? (
+          <p className="text-sm text-slate-400">
+            No audit events match the current filters. Try changing the time range or actor.
+          </p>
         ) : (
           <>
             <section className="rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-xs sm:text-sm text-slate-300">
@@ -138,7 +211,7 @@ export default function AuditLogsPage() {
                 Recent highlights
               </p>
               <ul className="space-y-1.5">
-                {logs.slice(0, 5).map((log) => (
+                {filteredLogs.slice(0, 5).map((log) => (
                   <li key={log.id} className="flex flex-wrap items-center gap-2">
                     <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] text-slate-200">
                       {new Date(log.created_at).toLocaleTimeString()}
@@ -166,7 +239,7 @@ export default function AuditLogsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {logs.map((log) => (
+                  {filteredLogs.map((log) => (
                     <tr key={log.id} className="border-b border-slate-800/70 last:border-0">
                       <td className="px-4 py-2 text-xs text-slate-300">
                         {new Date(log.created_at).toLocaleString()}
@@ -175,7 +248,7 @@ export default function AuditLogsPage() {
                         {log.action}
                       </td>
                       <td className="px-4 py-2 text-xs text-slate-300">
-                        {log.target ?? ''}
+                        {log.target ?? '—'}
                       </td>
                       <td className="px-4 py-2 text-xs text-slate-300">
                         {log.actor_id ?? 'system'} {log.actor_role ? `(${log.actor_role})` : ''}
