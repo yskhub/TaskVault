@@ -14,6 +14,25 @@ type AuditLog = {
   created_at: string;
 };
 
+type ActionKind = "CREATE" | "UPDATE" | "DELETE" | "OTHER";
+
+function getActionKind(action: string): ActionKind {
+  const upper = action.toUpperCase();
+
+  if (upper.includes("DELETE")) return "DELETE";
+  if (upper.includes("CREATE")) return "CREATE";
+  if (upper.includes("UPDATE") || upper.includes("UPGRADE")) return "UPDATE";
+
+  // For tokens like WORKFLOW_CREATED, take the trailing segment.
+  const parts = upper.split("_");
+  const last = parts[parts.length - 1];
+  if (last === "CREATED") return "CREATE";
+  if (last === "DELETED") return "DELETE";
+  if (last === "UPDATED") return "UPDATE";
+
+  return "OTHER";
+}
+
 export default function AuditLogsPage() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -216,6 +235,23 @@ export default function AuditLogsPage() {
                     <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] text-slate-200">
                       {new Date(log.created_at).toLocaleTimeString()}
                     </span>
+                    {(() => {
+                      const kind = getActionKind(log.action);
+                      if (kind === "OTHER") return null;
+                      return (
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide ${
+                            kind === "CREATE"
+                              ? "bg-emerald-500/10 text-emerald-200 border border-emerald-500/40"
+                              : kind === "UPDATE"
+                              ? "bg-sky-500/10 text-sky-200 border border-sky-500/40"
+                              : "bg-rose-500/10 text-rose-200 border border-rose-500/40"
+                          }`}
+                        >
+                          {kind}
+                        </span>
+                      );
+                    })()}
                     <span className="font-medium text-slate-100">{log.action}</span>
                     {log.target && (
                       <span className="text-slate-400">on {log.target}</span>
@@ -233,6 +269,7 @@ export default function AuditLogsPage() {
                 <thead className="border-b border-slate-800 bg-slate-900/90 text-xs uppercase tracking-wide text-slate-400">
                   <tr>
                     <th className="px-4 py-2 font-semibold">When</th>
+                    <th className="px-4 py-2 font-semibold">Type</th>
                     <th className="px-4 py-2 font-semibold">Action</th>
                     <th className="px-4 py-2 font-semibold">Target</th>
                     <th className="px-4 py-2 font-semibold">Actor</th>
@@ -243,6 +280,25 @@ export default function AuditLogsPage() {
                     <tr key={log.id} className="border-b border-slate-800/70 last:border-0">
                       <td className="px-4 py-2 text-xs text-slate-300">
                         {new Date(log.created_at).toLocaleString()}
+                      </td>
+                      <td className="px-4 py-2 text-xs text-slate-200">
+                        {(() => {
+                          const kind = getActionKind(log.action);
+                          if (kind === "OTHER") return "—";
+                          return (
+                            <span
+                              className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide ${
+                                kind === "CREATE"
+                                  ? "bg-emerald-500/10 text-emerald-200 border border-emerald-500/40"
+                                  : kind === "UPDATE"
+                                  ? "bg-sky-500/10 text-sky-200 border border-sky-500/40"
+                                  : "bg-rose-500/10 text-rose-200 border border-rose-500/40"
+                              }`}
+                            >
+                              {kind}
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td className="px-4 py-2 text-slate-100 text-xs sm:text-sm">
                         {log.action}

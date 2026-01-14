@@ -288,6 +288,22 @@ export default function DashboardPage() {
     ],
   };
 
+  const completionInsight =
+    completionRate === 0
+      ? "Completion rate is at 0%. Start by closing out a few steps to build momentum."
+      : completionRate < 50
+      ? "Completion rate is low. Consider focusing the team on clearing older pending steps."
+      : completionRate < 85
+      ? "Completion rate is healthy but could be higher. A quick triage session may help."
+      : "Completion rate is strong. Most workflow steps are getting closed out on time.";
+
+  const teamUtilisationInsight =
+    team.total_members === 0
+      ? "No team members are attached yet. Add a few teammates to see utilisation patterns."
+      : team.total_members >= 8
+      ? "Team utilisation is near the typical Free/Pro plan limits. Keep an eye on seat usage."
+      : "Team size is comfortably within limits. You have room to grow without upgrading plans yet.";
+
   return (
     <Page className="min-h-screen text-white px-4 py-10 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
@@ -429,6 +445,26 @@ export default function DashboardPage() {
             value={team.total_members}
             helper={`${team.admins} admins · ${team.members} members`}
           />
+        </motion.section>
+
+        <motion.section
+          className="grid gap-3 md:grid-cols-2 text-xs sm:text-sm text-slate-300"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut", delay: 0.12 }}
+        >
+          <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 mb-1">
+              Completion insight
+            </p>
+            <p>{completionInsight}</p>
+          </div>
+          <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 mb-1">
+              Team utilisation
+            </p>
+            <p>{teamUtilisationInsight}</p>
+          </div>
         </motion.section>
 
         <motion.section

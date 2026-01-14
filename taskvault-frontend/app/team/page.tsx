@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import { motion } from "framer-motion";
 import { UsageBanner } from "@/components/ui/UsageBanner";
@@ -29,6 +29,7 @@ export default function TeamPage() {
   const [role, setRole] = useState<"admin" | "member">("member");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [limitShake, setLimitShake] = useState(false);
   const { push } = useToast();
 
   async function fetchTeam() {
@@ -236,6 +237,20 @@ export default function TeamPage() {
   const currentRole: Role = "admin";
   const canManage = canManageTeam(currentRole);
 
+  const previousRemainingRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (state.status !== "ready") return;
+    const currentRemaining = limit - state.members.length;
+    const previous = previousRemainingRef.current;
+
+    if (previous !== null && previous > 0 && currentRemaining <= 0) {
+      setLimitShake(true);
+    }
+
+    previousRemainingRef.current = currentRemaining;
+  }, [state.status, state.status === "ready" ? state.members.length : 0, limit]);
+
   return (
     <Page className="min-h-screen text-white px-4 py-10 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
@@ -276,8 +291,13 @@ export default function TeamPage() {
               {isPro ? "Pro" : "Free"} plan · {limit} member limit
             </span>
           </div>
-
-          <UsageBanner used={used} limit={limit} plan={state.plan} />
+          <motion.div
+            animate={limitShake ? { x: [0, -4, 4, -3, 3, -2, 2, 0] } : { x: 0 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            onAnimationComplete={() => setLimitShake(false)}
+          >
+            <UsageBanner used={used} limit={limit} plan={state.plan} />
+          </motion.div>
 
           {state.status === "ready" && remaining === 1 && (
             <div className="mt-2 text-xs">
@@ -315,6 +335,13 @@ export default function TeamPage() {
 
             {error && <p className="text-xs text-red-400">{error}</p>}
 
+            {remaining <= 0 && (
+              <p className="text-xs text-amber-300">
+                Youve reached the {state.plan} plan team limit. Upgrade the plan to add
+                more members.
+              </p>
+            )}
+
             <button
               type="submit"
               disabled={submitting || !email.trim() || remaining <= 0 || !canManage}
@@ -323,6 +350,15 @@ export default function TeamPage() {
                   ? "bg-slate-800 text-slate-400 cursor-not-allowed opacity-70"
                   : "bg-accent text-white hover:bg-blue-500"
               }`}
+              title={
+                !email.trim()
+                  ? "Enter an email to invite a teammate."
+                  : remaining <= 0
+                  ? "Plan limit reached. Upgrade to add more members."
+                  : !canManage
+                  ? "Only admins can manage the team in this prototype."
+                  : undefined
+              }
             >
               {submitting ? "Adding member..." : canManage ? "Add member" : "Only admins can add"}
             </button>
@@ -367,6 +403,11 @@ export default function TeamPage() {
                                   onClick={() => updateRole(member.id, "admin")}
                                   className="rounded-md border border-purple-500/60 bg-purple-600/20 px-3 py-1 font-semibold text-purple-100 hover:bg-purple-600/30 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0"
                                   disabled={!canManage}
+                                  title={
+                                    !canManage
+                                      ? "Only admins can promote members in this prototype."
+                                      : undefined
+                                  }
                                 >
                                   Make admin
                                 </button>
@@ -377,6 +418,11 @@ export default function TeamPage() {
                                   onClick={() => updateRole(member.id, "member")}
                                   className="rounded-md border border-slate-600 bg-slate-800 px-3 py-1 font-semibold text-slate-100 hover:bg-slate-700 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0"
                                   disabled={!canManage}
+                                  title={
+                                    !canManage
+                                      ? "Only admins can change roles in this prototype."
+                                      : undefined
+                                  }
                                 >
                                   Make member
                                 </button>
@@ -386,6 +432,11 @@ export default function TeamPage() {
                                 onClick={() => removeMember(member.id)}
                                 className="rounded-md border border-red-500/60 bg-red-600/20 px-3 py-1 font-semibold text-red-100 hover:bg-red-600/30 transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0"
                                 disabled={!canManage}
+                                title={
+                                  !canManage
+                                    ? "Only admins can remove members in this prototype."
+                                    : undefined
+                                }
                               >
                                 Remove
                               </button>

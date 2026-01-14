@@ -14,6 +14,7 @@ export default function AuthPage() {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [shake, setShake] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,6 +36,7 @@ export default function AuthPage() {
     setPasswordError(nextPasswordError);
 
     if (nextEmailError || nextPasswordError) {
+      setShake(true);
       setLoading(false);
       return;
     }
@@ -47,6 +49,7 @@ export default function AuthPage() {
 
       if (error) {
         setMessage(error.message);
+        setShake(true);
       } else {
         setMessage(
           mode === "signin" ? "Signed in successfully" : "Check your inbox to confirm."
@@ -57,6 +60,7 @@ export default function AuthPage() {
       const fallback = "Something went wrong. Please try again.";
       const msg = err instanceof Error ? err.message : String(err ?? "");
       setMessage(msg || fallback);
+      setShake(true);
     } finally {
       setLoading(false);
     }
@@ -215,7 +219,13 @@ export default function AuthPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5 px-6 pb-7 sm:px-8 sm:pb-9">
+            <motion.form
+              onSubmit={handleSubmit}
+              className="space-y-5 px-6 pb-7 sm:px-8 sm:pb-9"
+              animate={shake ? { x: [0, -6, 6, -4, 4, -2, 2, 0] } : { x: 0 }}
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+              onAnimationComplete={() => setShake(false)}
+            >
               <div className="space-y-1 text-sm sm:text-base">
                 <label className="block text-slate-200">Email</label>
                 <input
@@ -292,7 +302,7 @@ export default function AuthPage() {
                 )}
 						{loading ? "Please wait..." : mode === "signin" ? "Sign in" : "Sign up"}
               </button>
-            </form>
+            </motion.form>
 
             {message && (
               <p
