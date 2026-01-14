@@ -246,6 +246,36 @@ export default function AccountPage() {
               </ul>
             </div>
           </div>
+
+          <div className="mt-2 rounded-lg border border-slate-800 bg-slate-950/60 p-4 text-xs sm:text-sm text-slate-300">
+            <div className="mb-2 flex items-center justify-between gap-4">
+              <span className="text-slate-400">At a glance</span>
+              <span className="rounded-full border border-slate-700 bg-slate-900 px-2 py-0.5 text-[11px] font-semibold text-slate-200">
+                {isPro ? "You are on Pro (mock)" : "You are on Free"}
+              </span>
+            </div>
+            <div className="grid grid-cols-[minmax(0,1.4fr),minmax(0,1fr),minmax(0,1fr)] gap-2">
+              <span className="text-slate-400" />
+              <span className="text-[11px] font-semibold text-slate-200">Free</span>
+              <span className="text-[11px] font-semibold text-slate-200">Pro (mock)</span>
+
+              <span className="text-slate-400">Workflows</span>
+              <span>Up to 3 active</span>
+              <span>Unlimited</span>
+
+              <span className="text-slate-400">Team</span>
+              <span>Lightweight collaboration</span>
+              <span>Richer roles & limits</span>
+
+              <span className="text-slate-400">Analytics</span>
+              <span>Basic dashboard</span>
+              <span>Deeper insights (preview)</span>
+
+              <span className="text-slate-400">Billing</span>
+              <span>Not connected</span>
+              <span>Also mock — no real charges</span>
+            </div>
+          </div>
         </section>
 
         <section className="space-y-2 text-sm">
