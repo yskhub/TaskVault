@@ -8,14 +8,8 @@ body {
   height: 100%;
 }
 
-/* Slightly larger base font-size so the whole app appears bigger
-   without needing browser zoom. Adjust if you prefer it smaller. */
+/* Base font-size kept at browser default for comfortable sizing
+   at 100% zoom across common desktop resolutions. */
 html {
-  font-size: 20px;
-}
-
-@media (min-width: 1440px) {
-  html {
-    font-size: 21px;
-  }
+  font-size: 16px;
 }
