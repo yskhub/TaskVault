@@ -90,26 +90,26 @@ export default function Home() {
               <ListItem key={item.href} index={index}>
                 <Link href={item.href} className="group block">
                   <SpotlightCard
-                    className="p-4 flex flex-col gap-2 bg-neutral-950/60 transition-transform duration-200 ease-out group-hover:-translate-y-1 group-hover:scale-[1.02]"
+                    className="p-4 flex flex-col gap-2 bg-slate-900/80 border border-slate-700/80 shadow-lg shadow-blue-900/40 transition-transform duration-200 ease-out group-hover:-translate-y-1 group-hover:scale-[1.03] group-hover:shadow-blue-500/60"
                     spotlightColor={item.spotlightColor}
                   >
                     <div className="mb-2 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 flex items-center justify-center rounded-lg bg-neutral-800 border border-neutral-700">
-                          <Icon className="h-4 w-4 text-slate-100" />
+                        <div className="h-8 w-8 flex items-center justify-center rounded-lg bg-blue-500/20 border border-blue-400/70 shadow-sm shadow-blue-500/50">
+                          <Icon className="h-4 w-4 text-blue-300" />
                         </div>
                         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
                           {item.title}
                         </p>
                       </div>
-                      <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-0.5 text-xs font-semibold text-slate-200">
+                      <span className="rounded-full border border-blue-500/70 bg-blue-500/10 px-3 py-0.5 text-xs font-semibold text-blue-200">
                         {item.badge}
                       </span>
                     </div>
-                    <p className="text-sm text-slate-100 mb-2 leading-relaxed">
+                    <p className="text-sm text-slate-50 mb-2 leading-relaxed">
                       {item.description}
                     </p>
-                    <p className="mt-auto text-sm sm:text-base font-semibold text-accent group-hover:text-blue-400">
+                    <p className="mt-auto text-sm sm:text-base font-semibold text-accent group-hover:text-blue-300">
                       Open {item.title.toLowerCase()}
                     </p>
                   </SpotlightCard>
