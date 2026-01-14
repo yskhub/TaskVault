@@ -1,37 +1,31 @@
 'use client';
 
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useSwipeable } from 'react-swipeable';
-
-import slide1 from '../../public/demo/slide-1.svg';
-import slide2b from '../../public/demo/slide-2b.svg';
-import slide3 from '../../public/demo/slide-3.svg';
-import slide4 from '../../public/demo/slide-4.svg';
 
 const slides = [
   {
     title: 'Your Command Center',
     caption:
       'Get a real-time view of workflows, team usage, and completion rates.',
-    image: slide1,
+    image: '/demo/slide-1.svg',
   },
   {
     title: 'Create Workflows in Seconds',
     caption: 'Define steps, assign owners, and track progress without friction.',
-    image: slide2b,
+    image: '/demo/slide-2b.svg',
   },
   {
     title: 'Manage Your Team',
     caption: 'Add members, control roles, and stay within plan limits.',
-    image: slide3,
+    image: '/demo/slide-3.svg',
   },
   {
     title: 'Track What Matters',
     caption:
       'Visual analytics help you understand progress and bottlenecks instantly.',
-    image: slide4,
+    image: '/demo/slide-4.svg',
   },
 ] as const;
 
@@ -80,13 +74,13 @@ export default function DemoCarousel() {
             >
               <div className="overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/80">
                 <div className="relative w-full overflow-hidden aspect-video">
-                  <Image
+                  <img
                     src={slide.image}
                     alt={slide.title}
                     width={1440}
                     height={900}
                     className="h-full w-full object-contain"
-                    priority={index === 0}
+                    loading={index === 0 ? 'eager' : 'lazy'}
                   />
                 </div>
               </div>
