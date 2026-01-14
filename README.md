@@ -1,136 +1,313 @@
-# TaskVault
-SUBSCRIPTION-BASED BUSINESS TOOL (SAAS PRODUCT)
+TaskVault
 
-## Repository Structure & Phases
+Subscription-Aware Workflow & Team Management SaaS (Portfolio-Grade Project)
 
-This repo is organized and versioned by implementation phases that match the product/technical PRD.
+TaskVault is a realistic, production-style SaaS application designed to demonstrate how a modern subscription-aware business tool is built end-to-end.
+It covers authentication, role-based access, workflow management, team collaboration, analytics dashboards, and admin audit concepts. All implemented with a strong focus on security, structure, and real-world engineering trade-offs.
 
-- **Phase 1** – Project foundation, FastAPI backend, Next.js frontend, Supabase health wiring.
-- **Phase 2** – Supabase Auth, `profiles` table with `subscription_plan`, `/auth` and `/account` flows.
-- **Phase 3** – In-memory workflow management APIs and `/workflows` UI.
-- **Phase 4** – User & team management, Supabase-backed `team_members` table, `/team` UI.
-- **Phase 5** – Dashboard & analytics via `/analytics/overview` and `/dashboard` (charts).
- - **Phase 6** – Optional features: mock plan upgrades/downgrades, usage limit alerts, and enhanced analytics.
- - **Phase 7** – Deployment guidance for Vercel (frontend) and a hosted FastAPI backend.
- - **Phase 8** – Security and best practices: env/secret hygiene, CORS configuration, and RLS guidance.
+This project is intentionally free-tier only, with mock plans and limits, to showcase SaaS architecture without relying on paid services.
 
-Each phase has:
-- A design/spec document under `Development_Phases/`.
-- A detailed implementation doc under `docs/`.
-- A hands-on walkthrough under `walkthrough/`.
+🚀 Live Demo
 
-## Git History & Tags
+Frontend (Vercel):
+https://task-vault-coral.vercel.app/
 
-The `main` branch contains a linear set of phase commits plus the initial GitHub scaffold. For quick navigation:
+Key routes to explore:
 
-- Tag **phase-1** → Commit "Phase 1: project foundation, frontend+backend scaffolding, Supabase health"
-- Tag **phase-2** → Commit "Phase 2: Supabase Auth, profiles table, mock subscription flows"
-- Tag **phase-3** → Commit "Phase 3: in-memory workflow management backend+frontend"
-- Tag **phase-4** → Commit "Phase 4: user & team management (in-memory)"
-- Tag **phase-4-supabase** → Commit "Phase 4: Supabase team persistence"
- - Tag **phase-5** → Commit "Phase 5: dashboard analytics backend+frontend"
- - Tag **phase-6** → Commit "Phase 6: optional features and mock plan upgrades"
- - Tag **phase-7** → Commit "Phase 7: deployment docs and backend CORS config"
+/auth – Authentication
 
-You can check out any phase with:
+/account – Account & plan info
 
-```bash
-git checkout phase-1   # or phase-2, phase-3, phase-4, phase-4-supabase, phase-5, phase-6, phase-7
-```
+/workflows – Workflow management
 
-The actual Git commands used to create these commits and tags are documented in git-operations/phase-commits.md.
+/team – Team members & roles
 
-## How to Run Locally
+/dashboard – Analytics & KPIs
 
-### Backend (FastAPI)
+/admin/audit – Admin audit log (admin-only)
 
-- From the project root:
+No local setup required to evaluate core functionality.
 
-	```bash
-	cd backend
-	../.venv/Scripts/python.exe -m uvicorn main:app --reload
-	```
+🧠 What This Project Demonstrates
 
-- The API will be available at:
-	- Health: http://127.0.0.1:8000/health
-	- API docs: http://127.0.0.1:8000/docs
+Subscription-aware UI and logic (free tier, mocked plans)
 
-### Frontend (Next.js)
+Auth-protected routes and role-based access
 
-- From the project root:
+Workflow creation, step tracking, and progress visualization
 
-	```bash
-	cd taskvault-frontend
-	npm install
-	npm run dev
-	```
+Team management with plan-aware limits
 
-- The app will be available at:
-	- http://localhost:3000
+Dashboard analytics and drill-downs
 
-Make sure your Supabase and backend URLs in `taskvault-frontend/.env.local` match your environment.
+Admin-only audit concepts
 
-## Deployed URLs
+Secure frontend-backend separation
 
-This repository is also deployed for easier testing (no local setup required):
+Production-style repo organization and commit history
 
-- **Frontend (Vercel)** – TaskVault Next.js app
-	- URL: _add your Vercel deployment URL here_
+This is not a toy CRUD app.
+It is intentionally scoped to look and behave like an internal SaaS tool used by real teams.
 
-- **Backend (Render / other host)** – FastAPI backend
-	- URL: _add your backend deployment URL here_
+🛠️ Tech Stack
 
-The frontend expects the backend base URL to be configured via environment variables (for example `NEXT_PUBLIC_API_BASE_URL`). Ensure this matches the deployed backend URL.
+Frontend
 
-## How to Use (Demo Walkthrough)
+Next.js (App Router)
 
-Assuming your frontend is deployed (or running locally on http://localhost:3000):
+TypeScript
 
-1. **Sign up / sign in**
-	- Go to `/auth`.
-	- Create an account with email + password, then sign in.
+Tailwind CSS
 
-2. **Account & subscription**
-	- Navigate to `/account`.
-	- See current plan, mock upgrade/downgrade actions, last sign-in time, and active session info.
+Framer Motion (micro-animations)
 
-3. **Workflows & progress**
-	- Go to `/workflows`.
-	- Create a workflow with a few steps (title + assignee).
-	- For each step, use the status pills (Pending / In progress / Done) and watch the per-workflow progress bar update.
+Deployed on Vercel
 
-4. **Dashboard & analytics**
-	- Visit `/dashboard`.
-	- Review KPIs and charts for workflows, steps, and team.
-	- Click a KPI card to drill down and highlight the related chart and details.
+Backend
 
-5. **Team management**
-	- Open `/team`.
-	- Add team members (email + role) within plan limits; existing members are loaded from Supabase.
+FastAPI
 
-This flow demonstrates authentication, subscription-aware limits, workflow tracking, analytics, and team management end-to-end.
+Python
 
-## Example Workflows You Can Create
+REST APIs
 
-1. **New Employee Onboarding**
+Structured routing and validation
 
-	Steps:
-	- "Offer letter & paperwork" – assigned to HR
-	- "IT account & laptop setup" – assigned to IT
-	- "Manager welcome & intro" – assigned to Hiring Manager
-	- "Benefits orientation" – assigned to HR
+Auth & Data
 
-2. **Customer Onboarding**
+Supabase Auth
 
-	Steps:
-	- "Kickoff call scheduled" – assigned to CSM
-	- "Workspace/project configured" – assigned to Implementation
-	- "Training session delivered" – assigned to CSM
-	- "First value milestone achieved" – assigned to Customer
+Supabase Postgres
 
-3. **Invoice & Payment Collection**
+Row Level Security (RLS) guidance
 
-	Steps:
-	- "Invoice drafted" – assigned to Finance
-	- "Invoice sent to client" – assigned to Account Manager
-	- "Payment received & recorded" – assigned to Finance
+Dev & Deployment
+
+Environment-based config
+
+Secure secret handling
+
+CORS configuration
+
+Git tags by implementation phase
+
+📦 Repository Structure & Phases
+
+This repository is organized and versioned by implementation phases that match the product and technical PRD.
+
+Phase Overview
+
+Phase 1
+Project foundation, FastAPI backend, Next.js frontend, Supabase health wiring.
+
+Phase 2
+Supabase Auth, profiles table with subscription_plan, /auth and /account flows.
+
+Phase 3
+In-memory workflow management APIs and /workflows UI.
+
+Phase 4
+User & team management, Supabase-backed team_members table, /team UI.
+
+Phase 5
+Dashboard & analytics via /analytics/overview and /dashboard (charts).
+
+Phase 6
+Optional features. Mock plan upgrades/downgrades, usage limit alerts, enhanced analytics.
+
+Phase 7
+Deployment guidance for Vercel (frontend) and hosted FastAPI backend.
+
+Phase 8
+Security & best practices. Environment hygiene, CORS configuration, RLS guidance.
+
+Each phase includes:
+
+A design/spec document under Development_Phases/
+
+Detailed implementation docs under docs/
+
+Hands-on walkthroughs under walkthrough/
+
+🏷️ Git History & Tags
+
+The main branch contains a linear, clean commit history with tagged milestones.
+
+Available tags:
+
+phase-1 – Project foundation and scaffolding
+
+phase-2 – Supabase Auth and profiles
+
+phase-3 – Workflow management
+
+phase-4 – Team management (in-memory)
+
+phase-4-supabase – Supabase persistence for teams
+
+phase-5 – Dashboard analytics
+
+phase-6 – Optional features & mock plans
+
+phase-7 – Deployment and backend config
+
+You can inspect any phase using:
+
+git checkout phase-3
+
+
+Exact Git commands are documented in:
+
+git-operations/phase-commits.md
+
+🔐 Security & Best Practices
+
+No secrets committed to the repository
+
+Environment-based configuration for frontend and backend
+
+Supabase Auth with protected routes
+
+Role-aware UI locking
+
+Backend-ready design for permission enforcement
+
+RLS guidance for multi-tenant data protection
+
+CORS configured explicitly for frontend origin
+
+Audit-friendly architecture (admin audit view)
+
+Security is treated as a first-class concern, not an afterthought.
+
+🧪 How to Run Locally
+Backend (FastAPI)
+cd backend
+../.venv/Scripts/python.exe -m uvicorn main:app --reload
+
+
+Available endpoints:
+
+Health: http://127.0.0.1:8000/health
+
+API Docs: http://127.0.0.1:8000/docs
+
+Frontend (Next.js)
+cd taskvault-frontend
+npm install
+npm run dev
+
+
+Frontend URL:
+
+http://localhost:3000
+
+
+Ensure .env.local contains:
+
+NEXT_PUBLIC_SUPABASE_URL
+
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+NEXT_PUBLIC_API_BASE_URL
+
+🧭 Demo Walkthrough
+
+Authentication
+
+Visit /auth
+
+Sign up or sign in using email and password
+
+Account & Plan
+
+Go to /account
+
+View current plan, mock upgrade/downgrade options, session info
+
+Workflows
+
+Navigate to /workflows
+
+Create workflows with multiple steps
+
+Track progress via status pills and progress bars
+
+Dashboard
+
+Open /dashboard
+
+Review KPIs and charts
+
+Click KPIs to drill into related metrics
+
+Team Management
+
+Visit /team
+
+Add team members with role assignment
+
+Enforced plan-aware limits
+
+Admin Audit
+
+Access /admin/audit as admin
+
+Review audit-style activity logs
+
+🧩 Example Workflows
+New Employee Onboarding
+
+Offer letter & paperwork (HR)
+
+IT account & laptop setup (IT)
+
+Manager welcome & intro (Manager)
+
+Benefits orientation (HR)
+
+Customer Onboarding
+
+Kickoff call scheduled (CSM)
+
+Workspace configured (Implementation)
+
+Training delivered (CSM)
+
+First value milestone (Customer)
+
+Invoice & Payment Collection
+
+Invoice drafted (Finance)
+
+Invoice sent (Account Manager)
+
+Payment recorded (Finance)
+
+🎯 Design Philosophy
+
+Built like an internal SaaS tool, not a marketing demo
+
+Free-tier only to avoid artificial paywalls
+
+Mock plans to demonstrate subscription logic
+
+Clean UI over flashy gimmicks
+
+Clear separation of concerns
+
+Extensible by design without premature over-engineering
+
+✅ Project Status
+
+Status: Feature-complete and portfolio-ready
+
+This project is intentionally scoped, deployed, documented, and ready for:
+
+Technical evaluation
+
+Code review
+
+System design discussion
+
+Frontend, backend, or full-stack interviews
