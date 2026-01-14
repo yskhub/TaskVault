@@ -83,6 +83,22 @@ export function AppShell({ children }: { children: ReactNode }) {
             </button>
           </div>
         </div>
+        <div className="pointer-events-none fixed right-4 top-4 z-20 flex flex-col items-end gap-2 sm:right-6 sm:top-6">
+          <div className="pointer-events-auto flex gap-2 sm:gap-3">
+            <Link
+              href="/auth"
+              className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-md shadow-blue-500/40 hover:bg-blue-500 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-500/50 whitespace-nowrap transition-transform duration-150"
+            >
+              Sign in / Sign up
+            </Link>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center justify-center rounded-md border border-slate-700 bg-slate-900/80 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-100 hover:bg-slate-800 hover:-translate-y-0.5 whitespace-nowrap transition-transform duration-150"
+            >
+              Go to dashboard
+            </Link>
+          </div>
+        </div>
         <CommandPalette
           actions={actions}
           open={paletteOpen}

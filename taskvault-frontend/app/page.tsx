@@ -66,7 +66,7 @@ export default function Home() {
           </span>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight max-w-4xl">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight lg:max-w-none">
                 Organize teams. Track workflows.
                 <span className="block text-accent">See what matters, fast.</span>
               </h1>
@@ -74,20 +74,6 @@ export default function Home() {
                 TaskVault brings together authentication, plans, workflows, team management,
                 and analytics into a single, subscription-friendly console.
               </p>
-            </div>
-            <div className="flex gap-2 sm:gap-3 mt-3 sm:mt-0">
-              <Link
-                href="/auth"
-                className="inline-flex items-center justify-center rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/40 hover:bg-blue-500 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-500/50 whitespace-nowrap transition-transform duration-150"
-              >
-                Sign in / Sign up
-              </Link>
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center justify-center rounded-md border border-slate-700 bg-slate-900/80 px-5 py-2.5 text-sm font-semibold text-slate-100 hover:bg-slate-800 hover:-translate-y-0.5 whitespace-nowrap transition-transform duration-150"
-              >
-                Go to dashboard
-              </Link>
             </div>
           </div>
         </motion.header>
