@@ -14,11 +14,41 @@
   <text x="190" y="205" fill="#e5e7eb" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="24" font-weight="600">Workflows</text>
   <text x="190" y="240" fill="#9ca3af" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="16">Active runs, status and owners</text>
   <rect x="160" y="320" width="360" height="180" rx="16" fill="#020617" stroke="#0f172a" />
+  <!-- Workflow run list inside bottom-left panel -->
+  <g font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="14">
+    <text x="190" y="352" fill="#9ca3af">Today</text>
+    <rect x="190" y="362" width="300" height="22" rx="6" fill="#020617" stroke="#1f2937" />
+    <text x="200" y="378" fill="#e5e7eb">Onboard new teammate</text>
+    <text x="430" y="378" fill="#22c55e">On track</text>
+
+    <rect x="190" y="392" width="300" height="22" rx="6" fill="#020617" stroke="#1f2937" />
+    <text x="200" y="408" fill="#e5e7eb">Monthly billing review</text>
+    <text x="430" y="408" fill="#facc15">Due soon</text>
+
+    <rect x="190" y="422" width="300" height="22" rx="6" fill="#020617" stroke="#1f2937" />
+    <text x="200" y="438" fill="#e5e7eb">Customer offboarding</text>
+    <text x="430" y="438" fill="#f97316">At risk</text>
+  </g>
   <rect x="560" y="160" width="360" height="340" rx="16" fill="#020617" stroke="#1d4ed8" />
   <text x="590" y="205" fill="#e5e7eb" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="24" font-weight="600">Team usage</text>
   <rect x="590" y="230" width="300" height="4" rx="2" fill="#1f2937" />
   <rect x="590" y="230" width="210" height="4" rx="2" fill="#3b82f6" />
   <rect x="560" y="540" width="360" height="180" rx="16" fill="#020617" stroke="#0f172a" />
+  <!-- Bottom-center panel showing key counters -->
+  <text x="590" y="575" fill="#9ca3af" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="14">Summary</text>
+  <g font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="14">
+    <rect x="590" y="590" width="90" height="50" rx="12" fill="#020617" stroke="#1f2937" />
+    <text x="605" y="612" fill="#e5e7eb" font-size="20" font-weight="600">18</text>
+    <text x="595" y="628" fill="#9ca3af">Active</text>
+
+    <rect x="700" y="590" width="90" height="50" rx="12" fill="#020617" stroke="#1f2937" />
+    <text x="715" y="612" fill="#e5e7eb" font-size="20" font-weight="600">6</text>
+    <text x="705" y="628" fill="#9ca3af">Waiting</text>
+
+    <rect x="810" y="590" width="90" height="50" rx="12" fill="#020617" stroke="#1f2937" />
+    <text x="825" y="612" fill="#e5e7eb" font-size="20" font-weight="600">3</text>
+    <text x="820" y="628" fill="#9ca3af">Blocked</text>
+  </g>
   <rect x="960" y="160" width="320" height="260" rx="16" fill="#020617" stroke="#1d4ed8" />
   <text x="980" y="205" fill="#e5e7eb" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="24" font-weight="600">Analytics</text>
   <polyline points="990,360 1030,320 1070,340 1110,300 1150,330" fill="none" stroke="#38bdf8" stroke-width="3" />
