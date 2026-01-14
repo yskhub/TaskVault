@@ -91,7 +91,14 @@ export default function DashboardPage() {
 
   async function loadAnalytics() {
     try {
-      const res = await fetch(`${API_BASE_URL}/analytics/overview`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const res = await fetch(`${API_BASE_URL}/analytics/overview`, {
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
       if (!res.ok) {
         throw new Error("Failed to load analytics");
       }
@@ -100,7 +107,14 @@ export default function DashboardPage() {
       setError(null);
     } catch (err) {
       console.error(err);
-      setError("Unable to load analytics data. Try again later.");
+      const isAbortError =
+        err instanceof DOMException && err.name === "AbortError";
+
+      if (isAbortError) {
+        setError("Analytics is taking too long to respond. Please try again.");
+      } else {
+        setError("Unable to load analytics data. Try again later.");
+      }
     } finally {
       setLoading(false);
     }
