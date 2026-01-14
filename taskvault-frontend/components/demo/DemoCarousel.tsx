@@ -14,7 +14,7 @@ const slides = [
   {
     title: 'Create Workflows in Seconds',
     caption: 'Define steps, assign owners, and track progress without friction.',
-    image: '/demo/slide-2.svg?v=2',
+    image: '/demo/slide-2b.svg?v=1',
   },
   {
     title: 'Manage Your Team',

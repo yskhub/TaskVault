@@ -1,0 +1,63 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Create Workflows in Seconds</title>
+  <desc id="desc">A focused workflow steps view, clearly distinct from team and analytics slides.</desc>
+  <defs>
+    <linearGradient id="bg2b" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#020617" />
+      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1440" height="900" fill="url(#bg2b)" />
+
+  <!-- Large center card -->
+  <rect x="260" y="170" width="920" height="560" rx="32" fill="#020617" stroke="#1e293b" stroke-width="2" />
+
+  <!-- Header -->
+  <text x="300" y="230" fill="#e5e7eb" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="28" font-weight="600">
+    Onboard new teammate
+  </text>
+  <text x="300" y="265" fill="#9ca3af" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="16">
+    Four simple steps from invite to first workflow run.
+  </text>
+
+  <!-- Vertical step timeline -->
+  <g font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="18">
+    <!-- Step 1 -->
+    <circle cx="320" cy="320" r="10" fill="#22c55e" />
+    <line x1="320" y1="330" x2="320" y2="390" stroke="#1f2937" stroke-width="2" />
+    <text x="350" y="328" fill="#e5e7eb">Invite teammate</text>
+    <text x="350" y="352" fill="#9ca3af" font-size="14">Send secure magic link from TaskVault.</text>
+
+    <!-- Step 2 -->
+    <circle cx="320" cy="410" r="10" fill="#3b82f6" />
+    <line x1="320" y1="420" x2="320" y2="480" stroke="#1f2937" stroke-width="2" />
+    <text x="350" y="418" fill="#e5e7eb">Assign workflow access</text>
+    <text x="350" y="442" fill="#9ca3af" font-size="14">Choose which workflows this teammate can run.</text>
+
+    <!-- Step 3 -->
+    <circle cx="320" cy="500" r="10" fill="#facc15" />
+    <line x1="320" y1="510" x2="320" y2="570" stroke="#1f2937" stroke-width="2" />
+    <text x="350" y="508" fill="#e5e7eb">Confirm plan &amp; limits</text>
+    <text x="350" y="532" fill="#9ca3af" font-size="14">Stay within Free vs Pro seat limits.</text>
+
+    <!-- Step 4 -->
+    <circle cx="320" cy="590" r="10" fill="#22c55e" />
+    <text x="350" y="598" fill="#e5e7eb">Kick off first workflow</text>
+    <text x="350" y="622" fill="#9ca3af" font-size="14">Track their first run end-to-end.</text>
+  </g>
+
+  <!-- Right-side mini summary card -->
+  <rect x="780" y="300" width="340" height="260" rx="20" fill="#020617" stroke="#1f2937" />
+  <text x="810" y="340" fill="#e5e7eb" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="18">
+    Workflow summary
+  </text>
+  <text x="810" y="370" fill="#9ca3af" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="14">
+    Steps: 4 · Owner: Admin · SLA: 2 days
+  </text>
+  <rect x="810" y="390" width="260" height="10" rx="5" fill="#111827" />
+  <rect x="810" y="390" width="140" height="10" rx="5" fill="#3b82f6" />
+  <text x="810" y="420" fill="#9ca3af" font-family="system-ui, -apple-system, BlinkMacSystemFont" font-size="13">
+    2/4 steps completed
+  </text>
+</svg>
