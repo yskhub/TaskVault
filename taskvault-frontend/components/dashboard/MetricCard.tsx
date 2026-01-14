@@ -18,9 +18,9 @@ export function MetricCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
     >
-      <p className="text-xs text-slate-400 mb-1">{label}</p>
-      <h2 className="text-2xl font-bold text-white">{value}</h2>
-      {helper && <p className="mt-1 text-[11px] text-slate-500">{helper}</p>}
+      <p className="text-xs text-slate-200 mb-1">{label}</p>
+      <h2 className="text-2xl font-bold text-slate-50">{value}</h2>
+      {helper && <p className="mt-1 text-[11px] text-slate-200/90">{helper}</p>}
     </motion.div>
   );
 }

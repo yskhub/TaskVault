@@ -475,19 +475,19 @@ export default function DashboardPage() {
         </motion.section>
 
         <motion.section
-          className="grid gap-3 md:grid-cols-2 text-xs sm:text-sm text-slate-300"
+          className="grid gap-3 md:grid-cols-2 text-xs sm:text-sm text-slate-100"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut", delay: 0.12 }}
         >
           <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 mb-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-200 mb-1">
               Completion insight
             </p>
             <p>{completionInsight}</p>
           </div>
           <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 mb-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-200 mb-1">
               Team utilisation
             </p>
             <p>{teamUtilisationInsight}</p>
