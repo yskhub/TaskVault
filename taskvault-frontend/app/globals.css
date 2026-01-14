@@ -13,3 +13,21 @@ body {
 html {
   font-size: 16px;
 }
+
+/* Global readability tuning: slightly brighten common text colors
+   so copy stands out more clearly against the dark backgrounds. */
+body {
+  color: rgb(226 232 240); /* similar to slate-200 */
+}
+
+.text-slate-300 {
+  color: rgb(226 232 240) !important; /* bump to slate-200 */
+}
+
+.text-slate-400 {
+  color: rgb(203 213 225) !important; /* bump to slate-300 */
+}
+
+.text-slate-500 {
+  color: rgb(148 163 184) !important; /* bump to slate-400 */
+}
