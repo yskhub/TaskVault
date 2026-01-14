@@ -66,7 +66,7 @@ export default function Home() {
           </span>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight lg:whitespace-nowrap">
+              <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight max-w-4xl">
                 Organize teams. Track workflows.
                 <span className="block text-accent">See what matters, fast.</span>
               </h1>
@@ -93,7 +93,7 @@ export default function Home() {
         </motion.header>
 
         <motion.section
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }}
