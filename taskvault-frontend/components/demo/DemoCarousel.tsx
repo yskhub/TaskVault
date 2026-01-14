@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
 import { useSwipeable } from 'react-swipeable';
 
 const slides = [
@@ -10,17 +9,17 @@ const slides = [
     title: 'Your Command Center',
     caption:
       'Get a real-time view of workflows, team usage, and completion rates.',
-    image: '/demo/slide-1.svg',
+    image: '/demo/slide-1.svg?v=1',
   },
   {
     title: 'Create Workflows in Seconds',
     caption: 'Define steps, assign owners, and track progress without friction.',
-    image: '/demo/slide-2.svg',
+    image: '/demo/slide-2.svg?v=1',
   },
   {
     title: 'Manage Your Team',
     caption: 'Add members, control roles, and stay within plan limits.',
-    image: '/demo/slide-3.svg',
+    image: '/demo/slide-3.svg?v=1',
   },
   {
     title: 'Track What Matters',
@@ -76,13 +75,13 @@ export default function DemoCarousel() {
               <div className="overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/80">
                 <div className="relative w-full overflow-hidden">
                   {/* Placeholder-friendly: these paths work even before real screenshots exist */}
-                  <Image
+                  <img
                     src={slide.image}
                     alt={slide.title}
                     width={1440}
                     height={900}
                     className="h-auto w-full object-cover"
-                    priority={index === 0}
+                    loading={index === 0 ? 'eager' : 'lazy'}
                   />
                 </div>
               </div>
