@@ -66,7 +66,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight lg:max-w-none">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight lg:max-w-none">
                 Organize teams. Track workflows.
                 <span className="block text-accent">See what matters, fast.</span>
               </h1>

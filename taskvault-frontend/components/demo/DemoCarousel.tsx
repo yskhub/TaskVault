@@ -1,31 +1,37 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useSwipeable } from 'react-swipeable';
+
+import slide1 from '../../public/demo/slide-1.svg';
+import slide2b from '../../public/demo/slide-2b.svg';
+import slide3 from '../../public/demo/slide-3.svg';
+import slide4 from '../../public/demo/slide-4.svg';
 
 const slides = [
   {
     title: 'Your Command Center',
     caption:
       'Get a real-time view of workflows, team usage, and completion rates.',
-    image: '/demo/slide-1.svg?v=2',
+    image: slide1,
   },
   {
     title: 'Create Workflows in Seconds',
     caption: 'Define steps, assign owners, and track progress without friction.',
-    image: '/demo/slide-2b.svg?v=1',
+    image: slide2b,
   },
   {
     title: 'Manage Your Team',
     caption: 'Add members, control roles, and stay within plan limits.',
-    image: '/demo/slide-3.svg?v=2',
+    image: slide3,
   },
   {
     title: 'Track What Matters',
     caption:
       'Visual analytics help you understand progress and bottlenecks instantly.',
-    image: '/demo/slide-4.svg?v=2',
+    image: slide4,
   },
 ] as const;
 
@@ -74,14 +80,13 @@ export default function DemoCarousel() {
             >
               <div className="overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/80">
                 <div className="relative w-full overflow-hidden aspect-video">
-                  {/* Placeholder-friendly: these paths work even before real screenshots exist */}
-                  <img
+                  <Image
                     src={slide.image}
                     alt={slide.title}
                     width={1440}
                     height={900}
                     className="h-full w-full object-contain"
-                    loading={index === 0 ? 'eager' : 'lazy'}
+                    priority={index === 0}
                   />
                 </div>
               </div>
