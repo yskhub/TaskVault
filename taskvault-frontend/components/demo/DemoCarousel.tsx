@@ -25,7 +25,7 @@ const slides = [
     title: 'Track What Matters',
     caption:
       'Visual analytics help you understand progress and bottlenecks instantly.',
-    image: '/demo/slide-4.svg',
+    image: '/demo/slide-4.svg?v=1',
   },
 ] as const;
 
@@ -73,14 +73,14 @@ export default function DemoCarousel() {
               transition={{ duration: 0.25, ease: 'easeOut' }}
             >
               <div className="overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/80">
-                <div className="relative w-full overflow-hidden">
+                <div className="relative w-full overflow-hidden aspect-video">
                   {/* Placeholder-friendly: these paths work even before real screenshots exist */}
                   <img
                     src={slide.image}
                     alt={slide.title}
                     width={1440}
                     height={900}
-                    className="h-auto w-full object-cover"
+                    className="h-full w-full object-contain"
                     loading={index === 0 ? 'eager' : 'lazy'}
                   />
                 </div>
