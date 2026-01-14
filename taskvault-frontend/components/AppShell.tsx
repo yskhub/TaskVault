@@ -82,6 +82,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {pathname !== "/" && (
             <Link
               href="/"
+              aria-label="Back to TaskVault home"
               className="pointer-events-auto inline-flex items-center rounded-full border border-slate-700/80 bg-slate-950/80 px-3 py-1.5 text-xs font-semibold text-slate-100 shadow-sm shadow-black/40 hover:border-accent hover:text-white hover:bg-slate-900/90 transition"
             >
               ⬅ Back to home
@@ -91,6 +92,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={() => setBackgroundMode("dots")}
+              aria-label="Use dotted background"
+              aria-pressed={backgroundMode === "dots"}
               className={`rounded-full px-2 py-1 transition ${
                 backgroundMode === "dots"
                   ? "bg-slate-800 text-white shadow-sm shadow-black/40"
@@ -102,6 +105,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={() => setBackgroundMode("ground")}
+              aria-label="Use terrain background"
+              aria-pressed={backgroundMode === "ground"}
               className={`rounded-full px-2 py-1 transition ${
                 backgroundMode === "ground"
                   ? "bg-slate-800 text-white shadow-sm shadow-black/40"
@@ -132,6 +137,14 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               Go to dashboard
             </Link>
+          </div>
+        </div>
+        <div className="pointer-events-none fixed bottom-4 right-4 z-40 flex items-center gap-2 text-[11px] text-slate-300 sm:right-6 sm:bottom-6">
+          <div className="pointer-events-auto inline-flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-950/80 px-3 py-1 shadow-sm shadow-black/40">
+            <span className="hidden sm:inline text-slate-300">Quick actions</span>
+            <span className="rounded-sm border border-slate-600 bg-slate-900 px-1.5 py-0.5 font-mono text-[10px] text-slate-100">
+              K
+            </span>
           </div>
         </div>
         <CommandPalette

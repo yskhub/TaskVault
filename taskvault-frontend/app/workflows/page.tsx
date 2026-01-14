@@ -634,7 +634,7 @@ export default function WorkflowsPage() {
                                 · {step.assigned_to}
                               </span>
                             </span>
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5" aria-label="Update step status">
                               {(
                                 [
                                   "pending",
@@ -670,6 +670,12 @@ export default function WorkflowsPage() {
                                           : "border-slate-400 bg-slate-500/20 text-slate-100"
                                         : "border-slate-700 bg-slate-900/80 text-slate-300 hover:border-slate-500/80"
                                     }`}
+                                    aria-pressed={active}
+                                    aria-label={
+                                      active
+                                        ? `${label} (current status)`
+                                        : `Mark step as ${label}`
+                                    }
                                   >
                                     {label}
                                   </button>

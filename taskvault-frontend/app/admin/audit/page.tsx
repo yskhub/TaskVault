@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
@@ -276,8 +277,14 @@ export default function AuditLogsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredLogs.map((log) => (
-                    <tr key={log.id} className="border-b border-slate-800/70 last:border-0">
+                  {filteredLogs.map((log, index) => (
+                    <motion.tr
+                      key={log.id}
+                      className="border-b border-slate-800/70 last:border-0"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.18, delay: index * 0.015 }}
+                    >
                       <td className="px-4 py-2 text-xs text-slate-300">
                         {new Date(log.created_at).toLocaleString()}
                       </td>
@@ -309,7 +316,7 @@ export default function AuditLogsPage() {
                       <td className="px-4 py-2 text-xs text-slate-300">
                         {log.actor_id ?? 'system'} {log.actor_role ? `(${log.actor_role})` : ''}
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))}
                 </tbody>
               </table>

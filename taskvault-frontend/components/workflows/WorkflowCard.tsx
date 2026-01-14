@@ -37,6 +37,7 @@ export function WorkflowCard({
               ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/40"
               : "bg-amber-500/10 text-amber-200 border border-amber-500/40"
           }`}
+          aria-label={status === "done" ? "Workflow completed" : "Workflow in progress"}
         >
           {status}
         </span>

@@ -76,6 +76,7 @@ export default function DashboardPage() {
   const [activeDrill, setActiveDrill] = useState<ActiveDrill>("none");
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [tourStepIndex, setTourStepIndex] = useState<number | null>(null);
+  const [isSignedIn, setIsSignedIn] = useState<boolean | null>(null);
 
   const tourSteps: TourStep[] = [
     {
@@ -149,7 +150,12 @@ export default function DashboardPage() {
           data: { user },
         } = await supabase.auth.getUser();
 
-        if (!user) return;
+        if (!user) {
+          setIsSignedIn(false);
+          return;
+        }
+
+        setIsSignedIn(true);
 
         const { data, error } = await supabase
           .from("profiles")
@@ -360,6 +366,12 @@ export default function DashboardPage() {
               See a quick overview of how TaskVault is being used: workflows in motion and your
               current team footprint.
             </p>
+            {isSignedIn === false && (
+              <p className="mt-2 text-xs text-slate-400">
+                You are viewing analytics without a signed-in profile. Sign in on the Auth page to
+                have usage tied to a specific account.
+              </p>
+            )}
           </header>
 
           <div className="flex justify-start sm:justify-end md:justify-end">

@@ -380,7 +380,10 @@ export default function TeamPage() {
                 </thead>
                 <tbody>
                   {state.members.map((member) => (
-                    <tr key={member.id} className="border-b border-slate-800/70 last:border-0">
+                    <tr
+                      key={member.id}
+                      className="border-b border-slate-800/70 last:border-0"
+                    >
                       <td className="px-4 py-2 text-slate-100">{member.email}</td>
                       <td className="px-4 py-2">
                         <span
