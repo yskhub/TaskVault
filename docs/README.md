@@ -43,3 +43,6 @@ Each phase builds on the previous, ensuring a logical, secure, and maintainable 
 
 ---
 See individual phase docs for details.
+
+For a step-by-step walkthrough of how to manually test the live Vercel deployment as a new user and as an admin, see:
+- [docs/vercel-testing-guide.md](docs/vercel-testing-guide.md)
