@@ -52,7 +52,20 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 export const useToast = () => {
   const ctx = useContext(ToastContext);
   if (!ctx) {
-    throw new Error("useToast must be used within a ToastProvider");
+  // In production we never want a missing provider to crash
+  // the entire app. Fall back to a no-op implementation and
+  // log a helpful error instead.
+  if (typeof window !== "undefined") {
+    // eslint-disable-next-line no-console
+    console.error(
+      "useToast called outside of ToastProvider. Toasts will be a no-op until ToastProvider is mounted."
+    );
+  }
+  return {
+    push: () => {
+      /* no-op fallback */
+    },
+  };
   }
   return ctx;
 };
