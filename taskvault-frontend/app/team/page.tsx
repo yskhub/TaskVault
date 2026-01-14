@@ -88,6 +88,23 @@ export default function TeamPage() {
     loadProfileAndTeam();
   }, []);
 
+    const previousRemainingRef = useRef<number | null>(null);
+
+    useEffect(() => {
+      if (state.status !== "ready") return;
+
+      const isProForEffect = state.plan === "pro";
+      const limitForEffect = isProForEffect ? 10 : 2;
+      const currentRemaining = limitForEffect - state.members.length;
+      const previous = previousRemainingRef.current;
+
+      if (previous !== null && previous > 0 && currentRemaining <= 0) {
+        setLimitShake(true);
+      }
+
+      previousRemainingRef.current = currentRemaining;
+    }, [state]);
+
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     if (state.status !== "ready") return;
@@ -241,20 +258,6 @@ export default function TeamPage() {
   const used = state.status === "ready" ? state.members.length : 0;
   const currentRole: Role = "admin";
   const canManage = canManageTeam(currentRole);
-
-  const previousRemainingRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (state.status !== "ready") return;
-    const currentRemaining = limit - state.members.length;
-    const previous = previousRemainingRef.current;
-
-    if (previous !== null && previous > 0 && currentRemaining <= 0) {
-      setLimitShake(true);
-    }
-
-    previousRemainingRef.current = currentRemaining;
-  }, [state.status, state.status === "ready" ? state.members.length : 0, limit]);
 
   return (
     <Page className="min-h-screen text-white px-4 py-10 sm:px-8">

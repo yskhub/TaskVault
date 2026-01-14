@@ -12,13 +12,12 @@ type State =
   | { status: "loading" }
   | { status: "signed_out" }
   | {
-      status: "ready";
-      email: string | null;
-      plan: Plan;
-      lastSignInAt: string | null;
-      sessionSummary: string | null;
-    };
-
+    status: "ready";
+    email: string | null;
+    plan: Plan;
+    lastSignInAt: string | null;
+    sessionSummary: string | null;
+  };
 export default function AccountPage() {
   const [state, setState] = useState<State>({ status: "loading" });
   const [updating, setUpdating] = useState(false);
@@ -27,116 +26,128 @@ export default function AccountPage() {
 
   useEffect(() => {
     async function loadProfile() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-      if (!user) {
+        if (!user) {
+          setState({ status: "signed_out" });
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("subscription_plan, email")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error(error);
+        }
+
+        const plan = (data?.subscription_plan as Plan) ?? "free";
+        const email = ((data?.email as string | null) ?? user.email) ?? null;
+
+        if (!data) {
+          await supabase.from("profiles").insert({ id: user.id, email, subscription_plan: plan });
+        }
+
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        const lastSignInAt =
+          (user.last_sign_in_at as string | null) ??
+          (session?.user?.last_sign_in_at as string | null) ??
+          null;
+
+        let sessionSummary: string | null = null;
+        if (session) {
+          const expiresAt = session.expires_at
+            ? new Date(session.expires_at * 1000).toISOString()
+            : null;
+          const createdAt = session.user.created_at
+            ? new Date(session.user.created_at).toISOString()
+            : null;
+          const factors = (session.user.factors as any[] | undefined) ?? [];
+          const hasMfa = factors.length > 0;
+          const provider = session.user.app_metadata?.provider ?? "password";
+          const parts = [
+            `Provider: ${provider}`,
+            expiresAt ? `Expires: ${expiresAt}` : null,
+            createdAt ? `Created: ${createdAt}` : null,
+            hasMfa ? "MFA enabled" : "MFA not configured",
+          ].filter(Boolean) as string[];
+          sessionSummary = parts.join(" · ");
+        }
+
+        setState({
+          status: "ready",
+          email,
+          plan,
+          lastSignInAt,
+          sessionSummary,
+        } as State);
+      } catch (err) {
+        console.error("Failed to initialize account profile", err);
         setState({ status: "signed_out" });
-        return;
       }
+    }
 
-      const { data, error } = await supabase
+    void loadProfile();
+  }, []);
+
+  async function handleSignOut() {
+    if (state.status === "loading") return;
+    setSigningOut(true);
+    try {
+      await supabase.auth.signOut();
+      router.push("/auth");
+    } catch (err) {
+      console.error("Sign out failed", err);
+    } finally {
+      setSigningOut(false);
+    }
+  }
+
+  async function mockUpgradeToPro() {
+    if (state.status !== "ready") return;
+    setUpdating(true);
+    try {
+      const { error } = await supabase
         .from("profiles")
-        .select("subscription_plan, email")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error(error);
+        .update({ subscription_plan: "pro" })
+        .eq("email", state.email ?? "");
+      if (!error) {
+        setState({ ...state, plan: "pro" });
       }
+    } catch (err) {
+      console.error("Failed to upgrade mock plan", err);
+    } finally {
+      setUpdating(false);
+    }
+  }
 
-      const plan = (data?.subscription_plan as Plan) ?? "free";
-      const email = ((data?.email as string | null) ?? user.email) ?? null;
-
-      // Ensure a profile row exists with at least the default plan
-      if (!data) {
-        await supabase.from("profiles").insert({ id: user.id, email, subscription_plan: plan });
+  async function mockDowngradeToFree() {
+    if (state.status !== "ready") return;
+    setUpdating(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ subscription_plan: "free" })
+        .eq("email", state.email ?? "");
+      if (!error) {
+        setState({ ...state, plan: "free" });
       }
+    } catch (err) {
+      console.error("Failed to downgrade mock plan", err);
+    } finally {
+      setUpdating(false);
+    }
+  }
 
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      const lastSignInAt =
-        (user.last_sign_in_at as string | null) ??
-        (session?.user?.last_sign_in_at as string | null) ??
-        null;
-
-      let sessionSummary: string | null = null;
-      if (session) {
-        const expiresAt = session.expires_at
-          ? new Date(session.expires_at * 1000).toISOString()
-          : null;
-        sessionSummary = `Provider: ${session.token_type ?? "access"}, Expires at: ${
-          expiresAt ?? "unknown"
-        }`;
-            try {
-            const {
-              data: { user },
-            } = await supabase.auth.getUser();
-
-            if (!user) {
-              setState({ status: "signed_out" });
-              return;
-            }
-
-            const { data, error } = await supabase
-              .from("profiles")
-              .select("subscription_plan, email")
-              .eq("id", user.id)
-              .maybeSingle();
-
-            if (error) {
-              console.error(error);
-            }
-
-            const plan = (data?.subscription_plan as Plan) ?? "free";
-            const email = ((data?.email as string | null) ?? user.email) ?? null;
-
-            if (!data) {
-              await supabase.from("profiles").insert({ id: user.id, email, subscription_plan: plan });
-            }
-
-            const {
-              data: { session },
-            } = await supabase.auth.getSession();
-            const lastSignInAt =
-              (user.last_sign_in_at as string | null) ??
-              (session?.user?.last_sign_in_at as string | null) ??
-              null;
-
-            let sessionSummary: string | null = null;
-            if (session) {
-              const expiresAt = session.expires_at
-              ? new Date(session.expires_at * 1000).toISOString()
-              : null;
-              const createdAt = session.user.created_at
-              ? new Date(session.user.created_at).toISOString()
-              : null;
-              const factors = (session.user.factors as any[] | undefined) ?? [];
-              const hasMfa = factors.length > 0;
-              const provider = session.user.app_metadata?.provider ?? "password";
-              const parts = [
-              `Provider: ${provider}`,
-              expiresAt ? `Expires: ${expiresAt}` : null,
-              createdAt ? `Created: ${createdAt}` : null,
-              hasMfa ? "MFA enabled" : "MFA not configured",
-              ].filter(Boolean) as string[];
-              sessionSummary = parts.join(" · ");
-            }
-
-            setState({
-              status: "ready",
-              email,
-              plan,
-              lastSignInAt,
-              sessionSummary,
-            });
-            } catch (err) {
-            console.error("Failed to initialize account profile", err);
-            setState({ status: "signed_out" });
-            }
+  if (state.status === "loading") {
     return (
       <main className="min-h-screen text-white px-4 py-10 sm:px-8">
         <div className="mx-auto flex max-w-3xl flex-col gap-6">
@@ -257,36 +268,6 @@ export default function AccountPage() {
               </ul>
             </div>
           </div>
-
-          <div className="mt-2 rounded-lg border border-slate-800 bg-slate-950/60 p-4 text-xs sm:text-sm text-slate-300">
-            <div className="mb-2 flex items-center justify-between gap-4">
-              <span className="text-slate-400">At a glance</span>
-              <span className="rounded-full border border-slate-700 bg-slate-900 px-2 py-0.5 text-[11px] font-semibold text-slate-200">
-                {isPro ? "You are on Pro (mock)" : "You are on Free"}
-              </span>
-            </div>
-            <div className="grid grid-cols-[minmax(0,1.4fr),minmax(0,1fr),minmax(0,1fr)] gap-2">
-              <span className="text-slate-400" />
-              <span className="text-[11px] font-semibold text-slate-200">Free</span>
-              <span className="text-[11px] font-semibold text-slate-200">Pro (mock)</span>
-
-              <span className="text-slate-400">Workflows</span>
-              <span>Up to 3 active</span>
-              <span>Unlimited</span>
-
-              <span className="text-slate-400">Team</span>
-              <span>Lightweight collaboration</span>
-              <span>Richer roles & limits</span>
-
-              <span className="text-slate-400">Analytics</span>
-              <span>Basic dashboard</span>
-              <span>Deeper insights (preview)</span>
-
-              <span className="text-slate-400">Billing</span>
-              <span>Not connected</span>
-              <span>Also mock — no real charges</span>
-            </div>
-          </div>
         </section>
 
         <section className="space-y-2 text-sm">
@@ -345,17 +326,17 @@ export default function AccountPage() {
               {updating ? "Updating..." : "Mock downgrade to Free"}
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={mockUpgradeToPro}
-              disabled={updating}
-              className="rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
-            >
-              {updating ? "Updating..." : "Mock upgrade to Pro"}
-            </button>
-          )}
-        </div>
-      </motion.div>
-    </main>
-  );
-}
+  					<button
+  						type="button"
+  						onClick={mockUpgradeToPro}
+  						disabled={updating}
+  						className="rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
+  					>
+  						{updating ? "Updating..." : "Mock upgrade to Pro"}
+  					</button>
+  					)}
+  				</div>
+  			</motion.div>
+  		</main>
+  	);
+  }
