@@ -81,6 +81,12 @@ export default function DemoCarousel() {
                     width={1440}
                     height={900}
                     className="h-full w-full object-contain"
+                    onError={(event) => {
+                      const target = event.currentTarget as HTMLImageElement;
+                      // Prevent infinite loop if fallback also fails
+                      target.onerror = null;
+                      target.src = '/demo/slide-3.svg?v=1';
+                    }}
                     loading={index === 0 ? 'eager' : 'lazy'}
                   />
                 </div>
