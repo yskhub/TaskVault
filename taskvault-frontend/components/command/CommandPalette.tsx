@@ -27,20 +27,18 @@ export function CommandPalette({
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 bg-black/40 z-50 flex items-start justify-center pt-32"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => onOpenChange(false)}
+            className="fixed bottom-16 right-4 z-50 sm:bottom-20 sm:right-6"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
           >
             <motion.div
-              className="bg-slate-950 text-white w-full max-w-md rounded-xl shadow-lg p-4 border border-slate-800"
+              className="bg-slate-950 text-white w-60 rounded-xl shadow-lg p-3 border border-slate-800"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
             >
-              <div className="mb-3 text-xs text-slate-500">
+              <div className="mb-2 text-xs font-medium text-slate-400">
                 Quick actions
               </div>
               <div className="space-y-1">
@@ -51,7 +49,7 @@ export function CommandPalette({
                       a.onSelect();
                       onOpenChange(false);
                     }}
-                    className="w-full text-left px-3 py-2 rounded-md text-sm hover:bg-slate-900"
+                    className="w-full text-left px-2.5 py-1.5 rounded-md text-xs sm:text-sm hover:bg-slate-900"
                   >
                     {a.label}
                   </button>
