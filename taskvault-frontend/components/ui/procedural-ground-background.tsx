@@ -123,8 +123,8 @@ const ProceduralGroundBackground: React.FC = () => {
     <div className="fixed inset-0 w-full h-full bg-zinc-950 -z-10">
       <canvas
         ref={canvasRef}
-        className="w-full h-full block touch-none"
-        style={{ filter: "contrast(1.1) brightness(0.9)" }}
+        className="w-full h-full block touch-none pointer-events-none"
+        style={{ filter: "contrast(1.05) brightness(1.0)" }}
       />
     </div>
   );

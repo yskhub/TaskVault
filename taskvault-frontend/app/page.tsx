@@ -67,11 +67,11 @@ export default function Home() {
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight lg:max-w-none">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight lg:max-w-none text-slate-50">
                 Organize teams. Track workflows.
                 <span className="block text-accent">See what matters, fast.</span>
               </h1>
-              <p className="mt-5 max-w-3xl text-lg text-slate-200">
+              <p className="mt-5 max-w-3xl text-lg text-slate-100">
                 TaskVault brings together authentication, plans, workflows, team management,
                 and analytics into a single, subscription-friendly console.
               </p>
@@ -129,7 +129,7 @@ export default function Home() {
         </motion.section>
 
         <motion.section
-          className="mt-4 grid gap-5 md:grid-cols-3 text-sm text-slate-300"
+          className="mt-4 grid gap-5 md:grid-cols-3 text-sm text-slate-100"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut", delay: 0.18 }}
