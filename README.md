@@ -1,13 +1,22 @@
 
+
 <div align="center">
-	<img src="https://raw.githubusercontent.com/yskhub/TaskVault/main/taskvault-frontend/public/logo.svg" alt="TaskVault Logo" width="120" />
   
-	<h1>🚀 <span style="color:#38bdf8">TaskVault</span> – Subscription-Aware Workflow & Team SaaS</h1>
-	<p><b>Production-style, portfolio-grade SaaS for workflow, team, and analytics management.</b></p>
-	<p>
-		<a href="https://task-vault-coral.vercel.app" target="_blank"><img src="https://img.shields.io/badge/Live%20Demo-Vercel-38bdf8?logo=vercel" alt="Live Demo" /></a>
-		<a href="https://github.com/yskhub/TaskVault" target="_blank"><img src="https://img.shields.io/github/stars/yskhub/TaskVault?style=social" alt="GitHub stars" /></a>
-	</p>
+	<a href="https://task-vault-coral.vercel.app" target="_blank">
+		<img src="https://raw.githubusercontent.com/yskhub/TaskVault/main/taskvault-frontend/public/logo.svg" alt="TaskVault Logo" width="120" />
+	</a>
+
+</div>
+
+<div align="center">
+
+	# 🚀 <span style="color:#38bdf8">TaskVault</span> – Subscription-Aware Workflow & Team SaaS
+  
+	**Production-style, portfolio-grade SaaS for workflow, team, and analytics management.**
+  
+	[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-38bdf8?logo=vercel)](https://task-vault-coral.vercel.app)
+	[![GitHub stars](https://img.shields.io/github/stars/yskhub/TaskVault?style=social)](https://github.com/yskhub/TaskVault)
+
 </div>
 
 ---
