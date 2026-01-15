@@ -12,11 +12,9 @@
 
 
 	<h1 align="center">🚀 TaskVault – Subscription-Aware Workflow & Team SaaS</h1>
-
-	<p align="center">
-		<b>Production-style, portfolio-grade SaaS for workflow, team, and analytics management.</b><br>
-		<a href="https://task-vault-coral.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-Vercel-38bdf8?logo=vercel"></a>
-		<a href="https://github.com/yskhub/TaskVault"><img src="https://img.shields.io/github/stars/yskhub/TaskVault?style=social"></a>
+	<p align="center"><b>Production-style, portfolio-grade SaaS for workflow, team, and analytics management.</b><br>
+	<a href="https://task-vault-coral.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-Vercel-38bdf8?logo=vercel"></a>
+	<a href="https://github.com/yskhub/TaskVault"><img src="https://img.shields.io/github/stars/yskhub/TaskVault?style=social"></a>
 	</p>
 
 </div>
