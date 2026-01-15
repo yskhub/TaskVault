@@ -10,10 +10,11 @@
 
 <div align="center">
 
-	# 🚀 <span style="color:#38bdf8">TaskVault</span> – Subscription-Aware Workflow & Team SaaS
-  
+
+	# 🚀 TaskVault – Subscription-Aware Workflow & Team SaaS
+
 	**Production-style, portfolio-grade SaaS for workflow, team, and analytics management.**
-  
+
 	[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-38bdf8?logo=vercel)](https://task-vault-coral.vercel.app)
 	[![GitHub stars](https://img.shields.io/github/stars/yskhub/TaskVault?style=social)](https://github.com/yskhub/TaskVault)
 
