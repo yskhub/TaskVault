@@ -301,11 +301,11 @@ export default function AccountPage() {
             ) : (
               <button
                 type="button"
-                onClick={mockUpgradeToPro}
+                onClick={() => router.push("/account/payment")}
                 disabled={updating}
                 className="inline-flex items-center justify-center rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white shadow-sm shadow-blue-500/40 hover:bg-blue-500 disabled:opacity-60"
               >
-                {updating ? "Updating plan..." : "Mock upgrade to Pro"}
+                Proceed to Pro
               </button>
             )}
           </div>
@@ -326,15 +326,30 @@ export default function AccountPage() {
               {updating ? "Updating..." : "Mock downgrade to Free"}
             </button>
           ) : (
-  					<button
-  						type="button"
-  						onClick={mockUpgradeToPro}
-  						disabled={updating}
-  						className="rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
-  					>
-  						{updating ? "Updating..." : "Mock upgrade to Pro"}
-  					</button>
-  					)}
+            <button
+              type="button"
+              onClick={() => router.push("/account/payment")}
+              disabled={updating}
+              className="rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
+            >
+              Proceed to Pro
+            </button>
+          )}
+          // Upgrade to Pro after dummy payment
+          import { useSearchParams } from "next/navigation";
+
+          // ...existing code...
+
+          export default function AccountPage() {
+            // ...existing code...
+            const searchParams = useSearchParams();
+
+            useEffect(() => {
+              if (searchParams?.get("upgrade") === "pro") {
+                mockUpgradeToPro();
+                router.replace("/account");
+              }
+            }, [searchParams]);
   				</div>
   			</motion.div>
   		</main>
