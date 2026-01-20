@@ -3,8 +3,8 @@ from fastapi import HTTPException, status
 
 def enforce_team_limit(plan: str, count: int) -> None:
 
-    limits = {"free": 2, "pro": 10}
-    limit = limits.get(plan, 2)
+    limits = {"free": 5, "pro": 10}
+    limit = limits.get(plan, 5)
     if count >= limit:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

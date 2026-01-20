@@ -110,7 +110,7 @@ def sign_in(email, password):
 Subscription Plan Mock Implementation:
 
 PLANS = {
-    "free": {"workflow_limit": 5, "team_limit": 2},
+    "free": {"workflow_limit": 6, "team_limit": 5},
     "pro": {"workflow_limit": 50, "team_limit": 10}
 }
 

@@ -243,7 +243,7 @@ export default function TeamPage() {
   }
 
   const isPro = state.plan === "pro";
-  const limit = isPro ? 10 : 2;
+  const limit = isPro ? 10 : 5;
   const remaining = state.status === "ready" ? limit - state.members.length : limit;
   const used = state.status === "ready" ? state.members.length : 0;
   const currentRole: Role = "admin";
