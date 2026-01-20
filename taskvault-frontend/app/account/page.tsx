@@ -335,10 +335,7 @@ export default function AccountPage() {
               Proceed to Pro
             </button>
           )}
-          // Upgrade to Pro after dummy payment
           import { useSearchParams } from "next/navigation";
-
-          // ...existing code...
 
           export default function AccountPage() {
             // ...existing code...
