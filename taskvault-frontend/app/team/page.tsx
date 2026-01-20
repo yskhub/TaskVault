@@ -246,7 +246,11 @@ export default function TeamPage() {
   const limit = isPro ? 10 : 5;
   const remaining = state.status === "ready" ? limit - state.members.length : limit;
   const used = state.status === "ready" ? state.members.length : 0;
-  const currentRole: Role = "admin";
+  let currentRole: Role = "member";
+  if (state.status === "ready" && state.email) {
+    const me = state.members.find((m) => m.email === state.email);
+    if (me) currentRole = me.role;
+  }
   const canManage = canManageTeam(currentRole);
 
   return (
