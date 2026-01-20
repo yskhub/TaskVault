@@ -335,20 +335,23 @@ export default function AccountPage() {
               Proceed to Pro
             </button>
           )}
-          import { useSearchParams } from "next/navigation";
+// Add at the top of the file, after other imports:
+import { useSearchParams } from "next/navigation";
 
-          export default function AccountPage() {
-            // ...existing code...
-            const searchParams = useSearchParams();
+// ...existing code...
 
-            useEffect(() => {
-              if (searchParams?.get("upgrade") === "pro") {
-                mockUpgradeToPro();
-                router.replace("/account");
-              }
-            }, [searchParams]);
-  				</div>
-  			</motion.div>
-  		</main>
-  	);
-  }
+export default function AccountPage() {
+  const [state, setState] = useState<State>({ status: "loading" });
+  const [updating, setUpdating] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams?.get("upgrade") === "pro") {
+      mockUpgradeToPro();
+      router.replace("/account");
+    }
+  }, [searchParams]);
+
+  // ...rest of the component code, including all returns and JSX...
