@@ -6,11 +6,21 @@ import { useState } from "react";
 export default function PaymentPage() {
   const router = useRouter();
   const [paying, setPaying] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState<string>("");
+
+  const paymentMethods = [
+    { id: "credit", label: "Credit Card", icon: "💳" },
+    { id: "debit", label: "Debit Card", icon: "🏦" },
+    { id: "googlepay", label: "Google Pay", icon: "🟩" },
+    { id: "applepay", label: "Apple Pay", icon: "🍏" },
+    { id: "upi", label: "UPI", icon: "🇮🇳" },
+    { id: "netbanking", label: "Net Banking", icon: "🏦" },
+  ];
 
   function handleDummyPayment() {
+    if (!selectedMethod) return;
     setPaying(true);
     setTimeout(() => {
-      // Simulate payment success and redirect back to account with upgrade
       router.push("/account?upgrade=pro");
     }, 2000);
   }
@@ -25,13 +35,33 @@ export default function PaymentPage() {
           <div className="text-lg font-semibold text-emerald-300">₹499.00</div>
           <div className="text-xs text-slate-400">(Demo payment, no real charge)</div>
         </div>
+        <div className="mb-6">
+          <div className="mb-2 text-sm font-semibold text-slate-200">Choose payment method:</div>
+          <div className="flex flex-col gap-2 items-stretch">
+            {paymentMethods.map((method) => (
+              <button
+                key={method.id}
+                type="button"
+                className={`flex items-center gap-3 rounded-md border px-4 py-2 text-base font-medium transition-colors ${selectedMethod === method.id ? "bg-accent text-white border-accent" : "bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700"}`}
+                onClick={() => setSelectedMethod(method.id)}
+                disabled={paying}
+              >
+                <span className="text-xl">{method.icon}</span>
+                {method.label}
+                {selectedMethod === method.id && (
+                  <span className="ml-auto text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Selected</span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
         <button
           type="button"
           onClick={handleDummyPayment}
-          disabled={paying}
+          disabled={paying || !selectedMethod}
           className="inline-flex items-center justify-center rounded-md bg-accent px-5 py-2 text-base font-semibold text-white shadow-sm shadow-blue-500/40 hover:bg-blue-500 disabled:opacity-60"
         >
-          {paying ? "Processing..." : "Pay with Razorpay"}
+          {paying ? "Processing..." : selectedMethod ? `Pay with ${paymentMethods.find(m => m.id === selectedMethod)?.label}` : "Select payment method"}
         </button>
       </div>
     </main>
