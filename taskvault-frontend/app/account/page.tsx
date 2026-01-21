@@ -316,24 +316,8 @@ export default function AccountPage() {
 
         <div className="flex items-center justify-between pt-3 text-xs text-slate-400">
           <span>Mock subscription only</span>
-          {isPro ? (
-            <button
-              type="button"
-              onClick={mockDowngradeToFree}
-              disabled={updating}
-              className="rounded-md bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-100 hover:bg-slate-700 disabled:opacity-60 border border-slate-600"
-            >
-              {updating ? "Updating..." : "Mock downgrade to Free"}
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => router.push("/account/payment")}
-              disabled={updating}
-              className="rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
-            >
-              Proceed to Pro
-            </button>
-          )}
-
-  // ...rest of the component code, including all returns and JSX...
+        </div>
+      </motion.div>
+    </main>
+  );
+}
